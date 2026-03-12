@@ -7,6 +7,7 @@ export interface FeedItem {
   image: string;
   isRead: boolean;
   isFavorite: boolean;
+  link?: string
 }
 
 export const mockFeedItems: FeedItem[] = [

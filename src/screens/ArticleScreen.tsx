@@ -26,7 +26,9 @@ export default function ArticleDetailScreen({ route, navigation }: Props) {
           {article.title}
         </Text>
     
-        <Image source={{uri: article.image}} style={styles.image} resizeMode='cover'/>
+        {
+          article.image && <Image source={{uri: article.image}} style={styles.image} resizeMode='cover'/>
+        }
         
         
         <Text variant="bodyLarge" style={{ color: theme.colors.onSurfaceVariant, marginTop: spacing.md }}>

@@ -27,7 +27,8 @@ export default function FeedCard({ item, onToggleFavorite, onPress }: FeedCardPr
       onPress={() => onPress?.(item)}
     >
       {/* Hero Image */}
-      <View style={[styles.imageContainer, { borderRadius: shapes.extraLarge }]}>
+     {
+      item.image &&  <View style={[styles.imageContainer, { borderRadius: shapes.extraLarge }]}>
         <Image
           source={{ uri: item.image }}
           style={[styles.image, { borderTopLeftRadius: shapes.extraLarge, borderTopRightRadius: shapes.extraLarge }]}
@@ -44,6 +45,7 @@ export default function FeedCard({ item, onToggleFavorite, onPress }: FeedCardPr
           />
         )}
       </View>
+     }
 
       <Card.Content style={styles.content}>
         {/* Source & Timestamp row */}
@@ -74,10 +76,10 @@ export default function FeedCard({ item, onToggleFavorite, onPress }: FeedCardPr
         {/* Summary */}
         <Text
           variant="bodyMedium"
-          numberOfLines={3}
+          numberOfLines={item.image != undefined ? 3 : 10}
           style={[styles.summary, { color: theme.colors.onSurfaceVariant }]}
         >
-          {`${item.description.split(" ").slice(0, 15).join(" ")}...`}
+          {item.description}
         </Text>
       </Card.Content>
 
