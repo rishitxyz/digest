@@ -20,8 +20,13 @@ import AddNewSource from '../components/modals/AddNewSource'
 import { Article } from '../database/schema/article'
 import { Source } from '../database/schema/source'
 import { SourceWithArticles } from '../database/schema'
+import { FeedType } from '../config/feed-source'
 
-export default function FeedScreen() {
+interface FeedScreenProps {
+  isFocused: boolean
+}
+
+export default function FeedScreen({ isFocused }: FeedScreenProps) {
   const theme = useTheme<MD3Theme>()
   const [filter, setFilter] = useState<FilterValue>('all')
   const [feeds, setFeeds] = useState<SourceWithArticles[]>([])
@@ -32,10 +37,8 @@ export default function FeedScreen() {
 
   // ── Database Fetching ──
   const loadFeeds = useCallback(async () => {
-    // Synchronously fetch data from SQLite via Drizzle
-    const fetchedFeeds = await getSourcesWithLatestArticles()
-    setFeeds(fetchedFeeds)
-  }, [])
+    if (isFocused) setFeeds(await getSourcesWithLatestArticles())
+  }, [isFocused])
 
   useEffect(() => {
     loadFeeds()
@@ -99,8 +102,9 @@ export default function FeedScreen() {
         })),
       )
 
-      // 3. Navigate to article page
-      navigation.navigate('ArticleDetail', { source, article })
+      if (source.type === FeedType.SUB_REDDIT)
+        navigation.navigate('RedditPost', { source, post: article })
+      else navigation.navigate('ArticleDetail', { source, article })
     },
     [navigation],
   )
@@ -129,6 +133,7 @@ export default function FeedScreen() {
       title: sourceWithArticles.name,
       source: {
         id: sourceWithArticles.id,
+        createdAt: sourceWithArticles.createdAt,
         name: sourceWithArticles.name,
         url: sourceWithArticles.url,
         type: sourceWithArticles.type,

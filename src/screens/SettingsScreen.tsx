@@ -2,14 +2,16 @@ import React, { useState } from 'react'
 import { View, StyleSheet, ScrollView } from 'react-native'
 import { Appbar, List, Switch, Divider, Menu, useTheme, Button } from 'react-native-paper'
 import type { MD3Theme } from 'react-native-paper'
-import { exportDb } from '../utils/user-data'
+import { clearAllDeviceData, exportDb } from '../utils/user-data'
 import { fontOptions, fontOptionsType } from '../theme/font'
 
 interface SettingsScreenProps {
+  isFocused: boolean
   isDarkMode: boolean
   onToggleDarkMode: () => void
   currentFont: string
   onChangeFont: (font: fontOptionsType) => void
+  onGoToFeeds: () => void
 }
 
 export default function SettingsScreen({
@@ -17,9 +19,15 @@ export default function SettingsScreen({
   onToggleDarkMode,
   currentFont,
   onChangeFont,
+  onGoToFeeds,
 }: SettingsScreenProps) {
   const [openFontMenu, setOpenFontMenu] = useState<boolean>(false)
   const theme = useTheme<MD3Theme>()
+
+  const handleDeleteUserData = () => {
+    clearAllDeviceData()
+    onGoToFeeds()
+  }
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
@@ -109,7 +117,7 @@ export default function SettingsScreen({
                     key={index}
                     title={displayName}
                     onPress={() => {
-                      onChangeFont(value)
+                      onChangeFont(value as fontOptionsType)
                       setOpenFontMenu(false)
                     }}
                   />
@@ -128,6 +136,17 @@ export default function SettingsScreen({
             titleStyle={{ color: theme.colors.onSurface }}
             descriptionStyle={{ color: theme.colors.onSurfaceVariant }}
             onTouchEnd={exportDb}
+          />
+          <List.Item
+            title="Delete user data"
+            description="Delete all articles & sources"
+            left={(props) => (
+              <List.Icon {...props} icon="alert-circle-outline" color={theme.colors.secondary} />
+            )}
+            right={() => <List.Icon icon="delete-outline" color={theme.colors.primary} />}
+            titleStyle={{ color: theme.colors.onSurface }}
+            descriptionStyle={{ color: theme.colors.onSurfaceVariant }}
+            onTouchEnd={handleDeleteUserData}
           />
 
           <Divider style={{ backgroundColor: theme.colors.outlineVariant }} />

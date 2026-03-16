@@ -1,18 +1,22 @@
-export const fetchPosts = async (subreddit: string, type: 'hot' | 'new' | 'top' = 'hot') => {
-  const response = await fetch(`https://www.reddit.com/r/${subreddit}/${type}.json`)
+import { Article } from '../database/schema/article'
+import { Source } from '../database/schema/source'
+
+export const fetchPosts = async (
+  source: Source,
+  type: 'hot' | 'new' | 'top' = 'hot',
+): Promise<Article[]> => {
+  const response = await fetch(`https://www.reddit.com/r/${source.url}/${type}.json`)
   const json = await response.json()
 
-  // Reddit's JSON wraps data inside kind="Listing" and data.children
-  const posts = json.data.children.map((child: any) => ({
+  return json.data.children.map((child: any) => ({
     id: child.data.id,
     title: child.data.title,
     author: child.data.author,
-    description: child.data.selftext, // The post body
-    url: child.data.url,
-    permalink: child.data.permalink, // We need this to get comments later!
+    description: child.data.selftext,
+    link: child.data.permalink,
+    sourceId: source.id,
+    publishedAt: new Date(child.data.created_utc).toString(),
   }))
-
-  return posts
 }
 
 // Example permalink: /r/androidapps/comments/1abcde/some_post_title/

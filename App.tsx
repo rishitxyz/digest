@@ -34,6 +34,7 @@ import { initializeDatabase } from './src/database/schema'
 import SourcesListScreen from './src/screens/SourcesScreen'
 import { fontOptions, fontOptionsType } from './src/theme/font'
 import { storage, STORAGE_KEYS } from './src/database/mmkv'
+import RedditPost from './src/screens/RedditPost'
 
 initializeDatabase()
 
@@ -89,25 +90,28 @@ function AppContent({
 
   const renderScene = useCallback(
     ({ route }: { route: RouteDef }) => {
+      const isFocused = routes[index].key === route.key
       switch (route.key) {
         case 'feeds':
-          return <FeedScreen />
+          return <FeedScreen isFocused={isFocused} />
         case 'sources':
-          return <SourcesListScreen />
+          return <SourcesListScreen isFocused={isFocused} />
         case 'settings':
           return (
             <SettingsScreen
+              isFocused={isFocused}
               isDarkMode={isDarkMode}
               onToggleDarkMode={onToggleDarkMode}
               currentFont={currentFont}
               onChangeFont={onChangeFont}
+              onGoToFeeds={() => setIndex(0)}
             />
           )
         default:
           return null
       }
     },
-    [isDarkMode, onToggleDarkMode, currentFont, onChangeFont],
+    [isDarkMode, onToggleDarkMode, currentFont, onChangeFont, index],
   )
 
   return (
@@ -207,6 +211,7 @@ export default function App() {
               )}
             </Stack.Screen>
             <Stack.Screen name="ArticleDetail" component={ArticleScreen} />
+            <Stack.Screen name="RedditPost" component={RedditPost} />
           </Stack.Navigator>
         </NavigationContainer>
       </PaperProvider>

@@ -6,7 +6,11 @@ import { Source } from '../database/schema/source'
 import * as sourceService from '../services/db/source'
 import EditSource from '../components/modals/EditSource'
 
-export default function SourcesListScreen() {
+interface SourcesListScreenProps {
+  isFocused: boolean
+}
+
+export default function SourcesListScreen({ isFocused }: SourcesListScreenProps) {
   const [sources, setSources] = useState<Source[]>([])
   const [loading, setLoading] = useState<boolean>(false)
 
@@ -16,10 +20,12 @@ export default function SourcesListScreen() {
   const theme = useTheme<MD3Theme>()
 
   React.useEffect(() => {
-    setLoading(true)
-    setSources(sourceService.getAllSources())
-    setLoading(false)
-  }, [])
+    if (isFocused) {
+      setLoading(true)
+      setSources(sourceService.getAllSources())
+      setLoading(false)
+    }
+  }, [isFocused])
 
   // Pass the specific source when clicked
   const handleEditSource = (source: Source) => {

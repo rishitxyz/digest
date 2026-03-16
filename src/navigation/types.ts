@@ -6,4 +6,6 @@ export type RootStackParamList = {
   MainTabs: undefined
   // The new screen to read the full article. We pass the whole item to it.
   ArticleDetail: { source: Source; article: Article }
+  // The new screen to read reddit posts with comments.
+  RedditPost: { source: Source; post: Article }
 }
