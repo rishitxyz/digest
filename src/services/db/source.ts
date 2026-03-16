@@ -2,13 +2,27 @@ import { eq, or, desc, asc } from 'drizzle-orm'
 import { db, SourceWithArticles } from '../../database/schema'
 import { CreateSource, Source, SourceTable } from '../../database/schema/source'
 import { ArticleTable } from '../../database/schema/article'
+import { FeedType } from '../../config/feed-source'
 
 export const updateById = (id: string, source: Source): Source => {
   return db.update(SourceTable).set(source).returning().get()
 }
 
-export const getAllSources = (): Source[] => {
-  return db.select().from(SourceTable).orderBy(asc(SourceTable.createdAt)).all()
+export const getAllSources = (): { subReddits: Source[]; rss: Source[] } => {
+  return {
+    subReddits: db
+      .select()
+      .from(SourceTable)
+      .where(eq(SourceTable.type, FeedType.SUB_REDDIT))
+      .orderBy(asc(SourceTable.createdAt))
+      .all(),
+    rss: db
+      .select()
+      .from(SourceTable)
+      .where(eq(SourceTable.type, FeedType.RSS))
+      .orderBy(asc(SourceTable.createdAt))
+      .all(),
+  }
 }
 
 export const readById = (id: string): Source | undefined => {

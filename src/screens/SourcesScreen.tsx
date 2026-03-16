@@ -11,7 +11,8 @@ interface SourcesListScreenProps {
 }
 
 export default function SourcesListScreen({ isFocused }: SourcesListScreenProps) {
-  const [sources, setSources] = useState<Source[]>([])
+  const [rssSources, setRssSources] = useState<Source[]>([])
+  const [subRedditSources, setSubRedditSources] = useState<Source[]>([])
   const [loading, setLoading] = useState<boolean>(false)
 
   // Track the ACTUAL source the user clicked on, not just a true/false boolean
@@ -22,7 +23,9 @@ export default function SourcesListScreen({ isFocused }: SourcesListScreenProps)
   React.useEffect(() => {
     if (isFocused) {
       setLoading(true)
-      setSources(sourceService.getAllSources())
+      const sources = sourceService.getAllSources()
+      setRssSources(sources.rss)
+      setSubRedditSources(sources.subReddits)
       setLoading(false)
     }
   }, [isFocused])
@@ -54,29 +57,55 @@ export default function SourcesListScreen({ isFocused }: SourcesListScreenProps)
         {loading ? (
           <ActivityIndicator animating={true} color={theme.colors.primary} />
         ) : (
-          <View
-            style={[
-              styles.listView,
-              { borderColor: theme.colors.outlineVariant, padding: spacing.lg },
-            ]}
-          >
-            <List.Section>
-              {sources.map((source, index) => (
-                <React.Fragment key={source.id}>
-                  <List.Item
-                    title={source.name}
-                    titleStyle={{ fontWeight: '600' }}
-                    left={() => <List.Icon icon="pencil-box" />}
-                    // Swapped onTouchEnd for onPress, and passed the current source!
-                    onPress={() => handleEditSource(source)}
-                  />
+          <View>
+            {rssSources.length && (
+              <View key="rss-view">
+                <List.Section key="rss-list-section">
+                  <List.Subheader key="rss-list-header" style={{ fontWeight: 600 }}>
+                    RSS feeds
+                  </List.Subheader>
+                  {rssSources.map((source, index) => (
+                    <React.Fragment key={source.id}>
+                      <List.Item
+                        title={source.name}
+                        titleStyle={{ fontWeight: '500' }}
+                        left={() => <List.Icon icon="pencil-box" />}
+                        // Swapped onTouchEnd for onPress, and passed the current source!
+                        onPress={() => handleEditSource(source)}
+                      />
 
-                  {index !== sources.length - 1 && (
-                    <Divider style={{ backgroundColor: theme.colors.outlineVariant }} />
-                  )}
-                </React.Fragment>
-              ))}
-            </List.Section>
+                      {index !== rssSources.length - 1 && (
+                        <Divider style={{ backgroundColor: theme.colors.outlineVariant }} />
+                      )}
+                    </React.Fragment>
+                  ))}
+                </List.Section>
+              </View>
+            )}
+            <View>
+              {subRedditSources.length && (
+                <List.Section key="subreddit-list-section">
+                  <List.Subheader key="subreddit-list-header" style={{ fontWeight: 600 }}>
+                    SubReddit feeds
+                  </List.Subheader>
+                  {subRedditSources.map((source, index) => (
+                    <React.Fragment key={source.id}>
+                      <List.Item
+                        title={source.name}
+                        titleStyle={{ fontWeight: '500' }}
+                        left={() => <List.Icon icon="reddit" />}
+                        // Swapped onTouchEnd for onPress, and passed the current source!
+                        onPress={() => handleEditSource(source)}
+                      />
+
+                      {index !== rssSources.length - 1 && (
+                        <Divider style={{ backgroundColor: theme.colors.outlineVariant }} />
+                      )}
+                    </React.Fragment>
+                  ))}
+                </List.Section>
+              )}
+            </View>
           </View>
         )}
       </ScrollView>

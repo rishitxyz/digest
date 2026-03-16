@@ -53,8 +53,8 @@ const AddNewSource = ({ visible, setVisible, onSourceAdded }: AddNewSourceProps)
       const newSource = sourceService.insertNew({
         id: source.trim().toLowerCase(),
         name: source,
-        url: finalUrl!,
         type: finalType,
+        url: sourceType === FeedType.SUB_REDDIT ? `r/${finalUrl!}` : finalUrl!,
       })
       if (finalType === FeedType.RSS) articleService.save(await fetchRSSFeed(newSource))
       else articleService.save(await redditService.fetchPosts(newSource))
@@ -113,7 +113,11 @@ const AddNewSource = ({ visible, setVisible, onSourceAdded }: AddNewSourceProps)
             textContentType="URL"
             label={sourceType === FeedType.RSS ? 'Feed URL' : 'Subreddit name'}
             value={sourceUrl}
-            onChangeText={(text) => setSourceUrl(text)}
+            onChangeText={(text) => {
+              text.trim()
+              text = text.toLowerCase()
+              setSourceUrl(text)
+            }}
             left={<TextInput.Affix text={sourceType === FeedType.SUB_REDDIT ? 'r/' : ''} />}
           />
         </View>

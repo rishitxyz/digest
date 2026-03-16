@@ -40,7 +40,7 @@ export default function RedditPost({ route, navigation }: Props) {
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <Appbar.Header elevated style={{ backgroundColor: theme.colors.surface }}>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
-        <Appbar.Content title={`r/${source.url}` || 'Post'} />
+        <Appbar.Content title={source.url || 'Post'} />
       </Appbar.Header>
 
       <ScrollView contentContainerStyle={styles.content}>
@@ -78,7 +78,7 @@ export default function RedditPost({ route, navigation }: Props) {
               </Text>
             ) : (
               comments.map((comment, idx) => (
-                <>
+                <React.Fragment key={idx}>
                   <List.Item
                     key={`${comment.author}-${idx}`}
                     title={() => (
@@ -105,7 +105,7 @@ export default function RedditPost({ route, navigation }: Props) {
                   {idx !== comments.length - 1 && (
                     <Divider style={{ backgroundColor: theme.colors.outlineVariant }} />
                   )}
-                </>
+                </React.Fragment>
               ))
             )}
           </List.Section>
