@@ -42,7 +42,7 @@ export function initializeDatabase() {
     CREATE TABLE IF NOT EXISTS article (
       id TEXT PRIMARY KEY,
       title TEXT NOT NULL,
-      author TEXT DEFAULT 'Unknown' NOT NULL, -- Added DEFAULT and NOT NULL
+      author TEXT DEFAULT 'Unknown' NOT NULL,
       summary TEXT,
       description TEXT NOT NULL,
       sourceId TEXT NOT NULL REFERENCES source(id) ON DELETE CASCADE, -- Matched to Drizzle

@@ -1,8 +1,9 @@
-import { FeedType, ITEMS_PER_FEED } from '../config/feed-source'
+import { FeedType } from '../config/feed-source'
 import { SourceWithArticles } from '../database/schema'
-import { Article, CreateArticle } from '../database/schema/article'
+import { Article } from '../database/schema/article'
 import { Source, SourceValidationError, ValidSource } from '../database/schema/source'
 import { parseXMLFeed, parser } from '../parser/rss-parser'
+import * as articleService from './db/article'
 
 export const quickFeedCheck = async (url: string): Promise<SourceValidationError | ValidSource> => {
   // 1. Strip accidental whitespace from pasting
@@ -65,34 +66,30 @@ export const quickFeedCheck = async (url: string): Promise<SourceValidationError
   }
 }
 
-export const fetchRSSFeed = async (source: Source): Promise<CreateArticle[]> => {
+export const fetchRSSFeed = async (source: Source): Promise<Article[]> => {
   const response = await fetch(source.url)
   const xmlString = await response.text()
   return parseXMLFeed(xmlString, source.id)
 }
 
-export const fetchAll = async (sources: Source[]): Promise<SourceWithArticles[]> => {
+export const fetchAll = async (sources: Source[]) => {
   const results = await Promise.allSettled(sources.map((source) => fetchRSSFeed(source)))
 
-  const sourceWithArticles: SourceWithArticles[] = results.flatMap((result, index) => {
+  const sourcesWithArticles: SourceWithArticles[] = results.flatMap((result, index) => {
     const source = sources[index]
 
     if (result.status === 'fulfilled') {
       const articles = [...result.value].sort(
         (a, b) => new Date(b.publishedAt).getTime() - new Date(a.publishedAt).getTime(),
       )
-      return [{ source: source, articles: articles.slice(0, ITEMS_PER_FEED) }]
+      return [{ ...source, articles }]
     }
 
     console.log(`Failed to load RSS feeds from ${source.name}, reason: ${String(result.reason)}`)
     return []
   })
 
-  // Sort groups by most recent item publishedAt (then by source name for stability)
-  return [...sourceWithArticles].sort((a, b) => {
-    const aTs = a.articles[0]?.publishedAt
-    const bTs = b.articles[0]?.publishedAt
-    const diff = new Date(bTs ?? 0).getTime() - new Date(aTs ?? 0).getTime()
-    return diff !== 0 ? diff : a.source.name.localeCompare(b.source.name)
+  sourcesWithArticles.map(({ articles }) => {
+    articleService.save(articles)
   })
 }

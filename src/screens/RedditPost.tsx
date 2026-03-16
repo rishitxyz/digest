@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { ScrollView, StyleSheet, View } from 'react-native'
 import { Text, Appbar, List, Divider, Icon, useTheme } from 'react-native-paper'
-import { spacing, shapes } from '../theme/theme'
+import { spacing, shapes, fontSize } from '../theme/theme'
 import { getRelativeTime } from '../utils/date'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { RootStackParamList } from '../navigation/types'
@@ -45,19 +45,23 @@ export default function RedditPost({ route, navigation }: Props) {
 
       <ScrollView contentContainerStyle={styles.content}>
         <Text
-          variant="headlineMedium"
+          variant="headlineSmall"
           style={{ color: theme.colors.onSurface, marginBottom: spacing.md }}
         >
           {post.title}
         </Text>
-        <Text variant="labelSmall">{getRelativeTime(post.publishedAt)}</Text>
-
         <Text
           variant="bodyLarge"
           style={{ color: theme.colors.onSurfaceVariant, marginTop: spacing.md }}
         >
           {post.description}
         </Text>
+        <View style={styles.author}>
+          <Text variant="labelSmall" style={{ color: theme.colors.primary }}>
+            {post.author}
+          </Text>
+          <Text variant="labelSmall">{getRelativeTime(post.publishedAt)}</Text>
+        </View>
 
         <Divider
           style={{
@@ -97,7 +101,7 @@ export default function RedditPost({ route, navigation }: Props) {
                     descriptionNumberOfLines={0}
                     titleStyle={{ fontSize: 13, fontWeight: 500, color: theme.colors.primary }}
                     descriptionStyle={{
-                      fontSize: 12,
+                      fontSize: fontSize.bodySmall,
                       marginTop: spacing.xs,
                       color: theme.colors.secondary,
                     }}
@@ -118,6 +122,12 @@ export default function RedditPost({ route, navigation }: Props) {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   content: { padding: spacing.lg },
+  author: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    marginTop: spacing.sm,
+  },
   image: {
     width: '100%',
     height: 200,

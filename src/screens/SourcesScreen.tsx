@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { View, StyleSheet, ScrollView } from 'react-native'
 import { Appbar, Divider, List, MD3Theme, useTheme, ActivityIndicator } from 'react-native-paper'
-import { spacing, shapes } from '../theme/theme'
+import { spacing, shapes, fontSize } from '../theme/theme'
 import { Source } from '../database/schema/source'
 import * as sourceService from '../services/db/source'
 import EditSource from '../components/modals/EditSource'
@@ -47,7 +47,7 @@ export default function SourcesListScreen({ isFocused }: SourcesListScreenProps)
           title="Sources"
           titleStyle={{
             fontWeight: '700',
-            fontSize: 24,
+            fontSize: fontSize.headlineSmall,
             color: theme.colors.onSurface,
           }}
         />

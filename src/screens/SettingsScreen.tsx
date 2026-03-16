@@ -4,6 +4,7 @@ import { Appbar, List, Switch, Divider, Menu, useTheme, Button } from 'react-nat
 import type { MD3Theme } from 'react-native-paper'
 import { clearAllDeviceData, exportDb } from '../utils/user-data'
 import { fontOptions, fontOptionsType } from '../theme/font'
+import { fontSize } from '../theme/theme'
 
 interface SettingsScreenProps {
   isFocused: boolean
@@ -36,7 +37,7 @@ export default function SettingsScreen({
           title="Settings"
           titleStyle={{
             fontWeight: '700',
-            fontSize: 24,
+            fontSize: fontSize.headlineSmall,
             color: theme.colors.onSurface,
           }}
         />

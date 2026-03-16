@@ -3,6 +3,8 @@ import { db, SourceWithArticles } from '../../database/schema'
 import { CreateSource, Source, SourceTable } from '../../database/schema/source'
 import { ArticleTable } from '../../database/schema/article'
 import { FeedType } from '../../config/feed-source'
+import { fetchAll } from '../feed-service'
+import { fetchAllSubReddits } from '../../parser/reddit-json'
 
 export const updateById = (id: string, source: Source): Source => {
   return db.update(SourceTable).set(source).returning().get()
@@ -57,4 +59,10 @@ export const getSourcesWithLatestArticles = async (
       },
     },
   })
+}
+
+export const refreshArticles = () => {
+  const { rss, subReddits } = getAllSources()
+  fetchAll(rss)
+  fetchAllSubReddits(subReddits)
 }

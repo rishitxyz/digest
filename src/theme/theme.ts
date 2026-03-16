@@ -30,6 +30,24 @@ const darkColors = {
   /* ... */
 }
 
+export const fontSize = {
+  displayLarge: 57,
+  displayMedium: 45,
+  displaySmall: 36,
+  headlineLarge: 32,
+  headlineMedium: 28,
+  headlineSmall: 24,
+  titleLarge: 22,
+  titleMedium: 16,
+  titleSmall: 14,
+  bodyLarge: 16,
+  bodyMedium: 14,
+  bodySmall: 12,
+  labelLarge: 14,
+  labelMedium: 12,
+  labelSmall: 11,
+}
+
 export const getDynamicFonts = (fontPrefix: 'FiraSans' | 'Poppins') => {
   const fontConfig = {
     displayLarge: {
@@ -75,7 +93,7 @@ export const getDynamicFonts = (fontPrefix: 'FiraSans' | 'Poppins') => {
       lineHeight: 32,
     },
     titleLarge: {
-      fontFamily: `${fontPrefix}_600SemiBold`, // Make sure to load this weight in App.tsx!
+      fontFamily: `${fontPrefix}_600SemiBold`,
       fontSize: 22,
       fontWeight: '600' as const,
       letterSpacing: 0,

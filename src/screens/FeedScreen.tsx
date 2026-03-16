@@ -1,19 +1,19 @@
-import React, { useState, useMemo, useCallback, useEffect } from 'react'
-import { View, StyleSheet, Animated } from 'react-native'
-import { Text, Appbar, useTheme } from 'react-native-paper'
+import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react'
+import { View, StyleSheet, Animated, Easing } from 'react-native'
+import { Text, Appbar, useTheme, Icon } from 'react-native-paper'
 import type { MD3Theme } from 'react-native-paper'
 import FeedCard from '../components/FeedCard'
 import AnimatedFAB from '../components/AnimatedFAB'
 import FeedFilter, { FilterValue } from '../components/FeedFilter'
 import { useScrollAnimation } from '../hooks/useScrollAnimation'
-import { spacing } from '../theme/theme'
+import { fontSize, spacing } from '../theme/theme'
 
 import { useNavigation } from '@react-navigation/native'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { RootStackParamList } from '../navigation/types'
 
 // Add these imports to access your Drizzle database functions
-import { getSourcesWithLatestArticles } from '../services/db/source'
+import { getSourcesWithLatestArticles, refreshArticles } from '../services/db/source'
 import { markArticleAsRead, toggleFavourite } from '../services/db/article' // Adjust this path to where you saved your CRUD helpers
 
 import AddNewSource from '../components/modals/AddNewSource'
@@ -32,6 +32,7 @@ export default function FeedScreen({ isFocused }: FeedScreenProps) {
   const [feeds, setFeeds] = useState<SourceWithArticles[]>([])
   const [addNewSource, setAddNewSource] = useState<boolean>(false)
   const { fabAnimValue, onScroll } = useScrollAnimation()
+  const [syncing, setSyncing] = useState<boolean>(false)
 
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
 
@@ -143,6 +144,35 @@ export default function FeedScreen({ isFocused }: FeedScreenProps) {
     }))
   }, [filteredItems])
 
+  const spinAnim = useRef(new Animated.Value(0)).current
+
+  useEffect(() => {
+    if (syncing) {
+      Animated.loop(
+        Animated.timing(spinAnim, {
+          toValue: 1,
+          duration: 1000,
+          easing: Easing.linear,
+          useNativeDriver: true,
+        }),
+      ).start()
+    } else {
+      spinAnim.stopAnimation()
+      spinAnim.setValue(0)
+    }
+  }, [syncing, spinAnim])
+
+  const spin = spinAnim.interpolate({
+    inputRange: [0, 1],
+    outputRange: ['0deg', '360deg'],
+  })
+
+  const handleFetchLatestData = () => {
+    setSyncing(true)
+    refreshArticles()
+    setSyncing(false)
+  }
+
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       {/* App Bar */}
@@ -151,19 +181,18 @@ export default function FeedScreen({ isFocused }: FeedScreenProps) {
           title="ReadIt"
           titleStyle={{
             fontWeight: '700',
-            fontSize: 24,
+            fontSize: fontSize.headlineSmall,
             color: theme.colors.onSurface,
           }}
         />
         <Appbar.Action
-          icon="magnify"
-          onPress={() => {}}
-          iconColor={theme.colors.onSurfaceVariant}
-        />
-        <Appbar.Action
-          icon="dots-vertical"
-          onPress={() => {}}
-          iconColor={theme.colors.onSurfaceVariant}
+          icon={({ size, color }) => (
+            <Animated.View style={{ transform: [{ rotate: spin }] }}>
+              <Icon source="sync" size={size} color={color} />
+            </Animated.View>
+          )}
+          onPress={handleFetchLatestData}
+          disabled={syncing}
         />
       </Appbar.Header>
 

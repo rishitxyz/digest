@@ -1,5 +1,15 @@
 import { Article } from '../database/schema/article'
 import { Source } from '../database/schema/source'
+import * as articleService from '../services/db/article'
+
+export const fetchAllSubReddits = async (sources: Source[]) => {
+  await Promise.all(
+    sources.map(async (source) => {
+      const posts = await fetchPosts(source)
+      articleService.save(posts)
+    }),
+  )
+}
 
 export const fetchPosts = async (
   source: Source,
@@ -11,11 +21,11 @@ export const fetchPosts = async (
   return json.data.children.map((child: any) => ({
     id: child.data.id,
     title: child.data.title,
-    author: child.data.author,
+    author: `u/${child.data.author}`, // Reddit provides this correctly
     description: child.data.selftext,
     link: child.data.permalink,
     sourceId: source.id,
-    publishedAt: new Date(child.data.created_utc).toString(),
+    publishedAt: new Date(child.data.created_utc * 1000).toISOString(),
   }))
 }
 

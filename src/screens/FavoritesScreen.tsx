@@ -2,7 +2,7 @@ import React from 'react'
 import { View, StyleSheet, ScrollView } from 'react-native'
 import { Text, Appbar, useTheme, Card, IconButton } from 'react-native-paper'
 import type { MD3Theme } from 'react-native-paper'
-import { spacing, shapes } from '../theme/theme'
+import { spacing, shapes, fontSize } from '../theme/theme'
 
 export default function FavoritesScreen() {
   const theme = useTheme<MD3Theme>()
@@ -14,7 +14,7 @@ export default function FavoritesScreen() {
           title="Favorites"
           titleStyle={{
             fontWeight: '700',
-            fontSize: 24,
+            fontSize: fontSize.headlineSmall,
             color: theme.colors.onSurface,
           }}
         />
