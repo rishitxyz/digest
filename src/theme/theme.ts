@@ -1,4 +1,5 @@
 import { MD3LightTheme, MD3DarkTheme, configureFonts, MD3Theme } from 'react-native-paper'
+import type { useMaterial3Theme } from 'react-native-material3-theme' // 1. Import the type
 
 // ── M3 Expressive Spacing Tokens (8dp grid) ──────────────────────────
 export const spacing = {
@@ -160,7 +161,7 @@ export const getDynamicFonts = (fontPrefix: 'FiraSans' | 'Poppins') => {
   return configureFonts({ config: fontConfig })
 }
 
-// ── Export Themes ────────────────────────────────────────────────────
+// ── Export Default Themes ────────────────────────────────────────────
 export const LightTheme: MD3Theme = {
   ...MD3LightTheme,
   colors: {
@@ -177,4 +178,29 @@ export const DarkTheme: MD3Theme = {
     ...darkColors,
   },
   roundness: shapes.extraLarge,
+}
+
+export type SystemM3Theme = ReturnType<typeof useMaterial3Theme>['theme']
+// ── Dynamic Theme Combiner ───────────────────────────────────────────
+// 2. Add the dynamic theme assembler
+export const getAppTheme = (
+  isDarkMode: boolean,
+  selectedFont: 'FiraSans' | 'Poppins',
+  systemTheme: SystemM3Theme | null,
+): MD3Theme => {
+  const baseTheme = isDarkMode ? DarkTheme : LightTheme
+  const dynamicFonts = getDynamicFonts(selectedFont)
+
+  // If the device has system colors (Android 12+), extract the right palette
+  const systemColors = systemTheme ? (isDarkMode ? systemTheme.dark : systemTheme.light) : null
+
+  return {
+    ...baseTheme,
+    // Merge base colors with system colors (if they exist)
+    colors: {
+      ...baseTheme.colors,
+      ...(systemColors || {}),
+    },
+    fonts: dynamicFonts,
+  }
 }

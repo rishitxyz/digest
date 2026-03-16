@@ -1,6 +1,14 @@
 import React, { useState } from 'react'
 import { View, StyleSheet, ScrollView } from 'react-native'
-import { Appbar, Divider, List, MD3Theme, useTheme, ActivityIndicator } from 'react-native-paper'
+import {
+  Appbar,
+  Divider,
+  List,
+  Text,
+  MD3Theme,
+  useTheme,
+  ActivityIndicator,
+} from 'react-native-paper'
 import { spacing, shapes, fontSize } from '../theme/theme'
 import { Source } from '../database/schema/source'
 import * as sourceService from '../services/db/source'
@@ -62,7 +70,7 @@ export default function SourcesListScreen({ isFocused }: SourcesListScreenProps)
               <View key="rss-view">
                 <List.Section key="rss-list-section">
                   <List.Subheader key="rss-list-header" style={{ fontWeight: 600 }}>
-                    RSS feeds
+                    <Text>RSS feeds</Text>
                   </List.Subheader>
                   {rssSources.map((source, index) => (
                     <React.Fragment key={source.id}>
@@ -86,7 +94,7 @@ export default function SourcesListScreen({ isFocused }: SourcesListScreenProps)
               {subRedditSources.length && (
                 <List.Section key="subreddit-list-section">
                   <List.Subheader key="subreddit-list-header" style={{ fontWeight: 600 }}>
-                    SubReddit feeds
+                    <Text>SubReddit feeds</Text>
                   </List.Subheader>
                   {subRedditSources.map((source, index) => (
                     <React.Fragment key={source.id}>

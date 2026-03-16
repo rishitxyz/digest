@@ -27,7 +27,10 @@ import {
   Poppins_700Bold,
 } from '@expo-google-fonts/poppins'
 
-import { LightTheme, DarkTheme, getDynamicFonts } from './src/theme/theme'
+// 1. Import the dynamic color hook and your new helper function
+import { useMaterial3Theme } from 'react-native-material3-theme'
+import { getAppTheme } from './src/theme/theme'
+
 import FeedScreen from './src/screens/FeedScreen'
 import SettingsScreen from './src/screens/SettingsScreen'
 import { initializeDatabase } from './src/database/schema'
@@ -162,7 +165,10 @@ export default function App() {
     Poppins_700Bold,
   })
 
-  // 2. Hide splash screen when fonts are ready
+  // 2. Fetch the dynamic device theme
+  const { theme: systemM3Theme } = useMaterial3Theme()
+
+  // 3. Hide splash screen when fonts are ready
   const onLayoutRootView = useCallback(async () => {
     if (fontsLoaded || fontError) {
       await SplashScreen.hideAsync()
@@ -175,27 +181,24 @@ export default function App() {
       return !prev
     })
   }, [])
+
   const changeFont = useCallback((font: fontOptionsType) => {
     setSelectedFont(font)
     storage.set(STORAGE_KEYS.APP_FONT, font)
   }, [])
 
+  // 4. Pass the system theme straight into your helper function
   const theme = useMemo(() => {
-    const baseTheme = isDarkMode ? DarkTheme : LightTheme
-    const dynamicFonts = getDynamicFonts(selectedFont)
-    return {
-      ...baseTheme,
-      fonts: dynamicFonts,
-    }
-  }, [isDarkMode, selectedFont])
+    return getAppTheme(isDarkMode, selectedFont, systemM3Theme)
+  }, [isDarkMode, selectedFont, systemM3Theme])
 
-  // 3. Render nothing until fonts are loaded (splash screen remains)
+  // 5. Render nothing until fonts are loaded (splash screen remains)
   if (!fontsLoaded && !fontError) {
     return null
   }
 
   return (
-    // 4. Attach the onLayout callback to the outermost view
+    // 6. Attach the onLayout callback to the outermost view
     <SafeAreaProvider onLayout={onLayoutRootView}>
       <PaperProvider theme={theme}>
         <NavigationContainer>
