@@ -6,9 +6,6 @@ import { spacing, shapes } from '../theme/theme'
 import { getRelativeTime } from '../utils/date'
 import { Source } from '../database/schema/source'
 import { Article } from '../database/schema/article'
-import { FeedType } from '../config/feed-source'
-
-const DEFAULT_IMAGE = require('../../assets/defaults/article-default.png')
 
 interface FeedCardProps {
   source: Source
@@ -49,15 +46,6 @@ export default function FeedCard({ source, article, onToggleFavorite, onPress }:
       </View>
 
       <Card.Content style={styles.content}>
-        <View style={styles.metaRow}>
-          <Text variant="labelMedium" style={{ color: theme.colors.primary, fontWeight: '600' }}>
-            {source.type === FeedType.SUB_REDDIT ? source.url : source.name}
-          </Text>
-          <Text variant="labelSmall" style={{ color: theme.colors.onSurfaceVariant }}>
-            {getRelativeTime(article.publishedAt)}
-          </Text>
-        </View>
-
         <Text
           variant="headlineSmall"
           numberOfLines={2}
@@ -66,20 +54,25 @@ export default function FeedCard({ source, article, onToggleFavorite, onPress }:
           {article.title}
         </Text>
 
-        <Text
-          variant="bodyMedium"
-          numberOfLines={3}
-          style={[styles.summary, { color: theme.colors.onSurfaceVariant }]}
-        >
-          {article.description}
-        </Text>
+        {article.description !== '' && (
+          <Text
+            variant="bodyMedium"
+            numberOfLines={3}
+            style={[styles.summary, { color: theme.colors.onSurfaceVariant }]}
+          >
+            {article.description}
+          </Text>
+        )}
       </Card.Content>
 
       {/* Actions */}
       <View style={styles.actions}>
+        <Text variant="labelSmall" style={{ color: theme.colors.onSurfaceVariant }}>
+          {getRelativeTime(article.publishedAt)}
+        </Text>
         <IconButton
-          icon={article.isFavourite ? 'heart' : 'heart-outline'}
-          iconColor={article.isFavourite ? theme.colors.error : theme.colors.onSurfaceVariant}
+          icon={article.bookmarked ? 'bookmark-check' : 'bookmark-plus-outline'}
+          iconColor={article.bookmarked ? theme.colors.error : theme.colors.onSurfaceVariant}
           size={22}
           onPress={() => onToggleFavorite?.(article.id)}
         />
@@ -129,8 +122,9 @@ const styles = StyleSheet.create({
   actions: {
     flex: 1,
     flexDirection: 'row',
-    justifyContent: 'flex-end',
-    paddingHorizontal: spacing.sm,
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: spacing.lg,
     paddingBottom: spacing.xs,
   },
 })

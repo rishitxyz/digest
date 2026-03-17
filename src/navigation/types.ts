@@ -12,6 +12,6 @@ export type RootStackParamList = {
   AllArticles: {
     source: Source
     handleCardPress: (source: Source, article: Article) => void
-    toggleFavouriteCall: (article: Article) => void
+    toggleBookmarkedCall: (article: Article) => void
   }
 }

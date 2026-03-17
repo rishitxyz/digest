@@ -13,7 +13,7 @@ import { RootStackParamList } from '../navigation/types'
 
 // Add these imports to access your Drizzle database functions
 import { getSourcesWithLatestArticles, refreshArticles } from '../services/db/source'
-import { markArticleAsRead, toggleFavourite } from '../services/db/article' // Adjust this path to where you saved your CRUD helpers
+import { markArticleAsRead, toggleBookmarked } from '../services/db/article' // Adjust this path to where you saved your CRUD helpers
 
 import AddNewSource from '../components/modals/AddNewSource'
 import { Article } from '../database/schema/article'
@@ -30,7 +30,7 @@ export default function FeedScreen({ isFocused }: FeedScreenProps) {
   const [filter, setFilter] = useState<FilterValue>('all')
   const [feeds, setFeeds] = useState<SourceWithArticles[]>([])
   const [addNewSource, setAddNewSource] = useState<boolean>(false)
-  const { fabAnimValue, onScroll } = useScrollAnimation()
+  const { onScroll } = useScrollAnimation()
   const [syncing, setSyncing] = useState<boolean>(false)
 
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
@@ -58,7 +58,7 @@ export default function FeedScreen({ isFocused }: FeedScreenProps) {
         return feeds
           .map((feed) => ({
             ...feed,
-            articles: feed.articles.filter((article) => article.isFavourite),
+            articles: feed.articles.filter((article) => article.bookmarked),
           }))
           .filter((feed) => feed.articles.length > 0)
       default:
@@ -68,18 +68,18 @@ export default function FeedScreen({ isFocused }: FeedScreenProps) {
 
   // ── Actions ──
   // Updated to receive the whole article so we know its exact current state
-  const toggleFavouriteCall = useCallback((article: Article) => {
-    const newFavoriteStatus = !article.isFavourite
+  const toggleBookmarkedCall = useCallback((article: Article) => {
+    const newFavoriteStatus = !article.bookmarked
 
     // 1. Save to database in the background
-    toggleFavourite(article.id, newFavoriteStatus)
+    toggleBookmarked(article.id, newFavoriteStatus)
 
     // 2. Optimistically update UI
     setFeeds((prev) =>
       prev.map((group) => ({
         ...group,
         articles: group.articles.map((a) =>
-          a.id === article.id ? { ...a, isFavourite: newFavoriteStatus } : a,
+          a.id === article.id ? { ...a, bookmarked: newFavoriteStatus } : a,
         ),
       })),
     )
@@ -111,9 +111,9 @@ export default function FeedScreen({ isFocused }: FeedScreenProps) {
 
   const handleHeadingPress = useCallback(
     (source: Source) => {
-      navigation.navigate('AllArticles', { source, handleCardPress, toggleFavouriteCall })
+      navigation.navigate('AllArticles', { source, handleCardPress, toggleBookmarkedCall })
     },
-    [navigation, handleCardPress, toggleFavouriteCall],
+    [navigation, handleCardPress, toggleBookmarkedCall],
   )
 
   const renderItem = useCallback(
@@ -122,11 +122,11 @@ export default function FeedScreen({ isFocused }: FeedScreenProps) {
         source={section.source}
         article={item}
         // Pass the whole item instead of just the ID to match the new signature
-        onToggleFavorite={() => toggleFavouriteCall(item)}
+        onToggleFavorite={() => toggleBookmarkedCall(item)}
         onPress={() => handleCardPress(section.source, item)}
       />
     ),
-    [toggleFavouriteCall, handleCardPress],
+    [toggleBookmarkedCall, handleCardPress],
   )
 
   type FeedSection = {
@@ -236,9 +236,8 @@ export default function FeedScreen({ isFocused }: FeedScreenProps) {
               {source.type === FeedType.SUB_REDDIT ? source.url : title}
             </Text>
             <IconButton
-              icon="chevron-right"
-              mode="contained"
-              size={10}
+              icon="arrow-right-thick"
+              size={12}
               animated
               onPress={() => handleHeadingPress(source)}
             />

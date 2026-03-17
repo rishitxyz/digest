@@ -18,7 +18,7 @@ export const fetchPosts = async (
   const response = await fetch(`https://www.reddit.com/${source.url}/${type}.json`)
   const json = await response.json()
 
-  return json.data.children.map((child: any) => ({
+  const s = json.data.children.map((child: any) => ({
     id: child.data.id,
     title: child.data.title,
     author: `u/${child.data.author}`, // Reddit provides this correctly
@@ -27,6 +27,8 @@ export const fetchPosts = async (
     sourceId: source.id,
     publishedAt: new Date(child.data.created_utc * 1000).toISOString(),
   }))
+  console.log(s)
+  return s
 }
 
 // Example permalink: /r/androidapps/comments/1abcde/some_post_title/

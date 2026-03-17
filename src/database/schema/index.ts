@@ -45,12 +45,12 @@ export function initializeDatabase() {
       author TEXT DEFAULT 'Unknown' NOT NULL,
       summary TEXT,
       description TEXT NOT NULL,
-      sourceId TEXT NOT NULL REFERENCES source(id) ON DELETE CASCADE, -- Matched to Drizzle
+      sourceId TEXT NOT NULL REFERENCES source(id) ON DELETE CASCADE,
       link TEXT, -- Removed NOT NULL
       imageUrl TEXT,
-      publishedAt TEXT NOT NULL, -- Changed from 'published'
+      publishedAt TEXT NOT NULL,
       isRead INTEGER DEFAULT 0 NOT NULL,
-      isFavourite INTEGER DEFAULT 0 NOT NULL -- Changed from 'isFavorite'
+      bookmarked INTEGER DEFAULT 0 NOT NULL
     );
   `)
 }

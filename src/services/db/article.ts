@@ -24,10 +24,10 @@ export const markArticleAsRead = (id: string) => {
     .run()
 }
 
-export const toggleFavourite = (id: string, isFavourite: boolean) => {
+export const toggleBookmarked = (id: string, bookmarked: boolean) => {
   db.update(ArticleTable)
     .set({
-      isFavourite,
+      bookmarked,
     })
     .where(eq(ArticleTable.id, id))
     .run()

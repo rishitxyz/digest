@@ -65,7 +65,7 @@ export const parseXMLFeed = async (xmlString: string, sourceId: string): Promise
       publishedAt: item.pubDate || item.published || new Date().toISOString(),
       imageUrl: item.enclosure?.['@_url'] || item['media:content']?.['@_url'],
       isRead: false,
-      isFavourite: false,
+      bookmarked: false,
     }
   })
 }

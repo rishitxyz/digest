@@ -12,7 +12,7 @@ import FeedCard from '../components/FeedCard'
 type Props = NativeStackScreenProps<RootStackParamList, 'AllArticles'>
 
 export default function AllArticles({ route, navigation }: Props) {
-  const { source, handleCardPress, toggleFavouriteCall } = route.params
+  const { source, handleCardPress, toggleBookmarkedCall } = route.params
   const [items, setItems] = useState<Article[]>([])
   const [loading, setLoading] = useState<boolean>(false)
 
@@ -42,7 +42,7 @@ export default function AllArticles({ route, navigation }: Props) {
                 source={source}
                 article={item}
                 onPress={() => handleCardPress(source, item)}
-                onToggleFavorite={() => toggleFavouriteCall(item)}
+                onToggleFavorite={() => toggleBookmarkedCall(item)}
               />
             ))}
           </List.Section>

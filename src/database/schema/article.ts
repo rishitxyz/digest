@@ -14,7 +14,7 @@ export const ArticleTable = sqliteTable('article', {
   imageUrl: text('imageUrl'),
   publishedAt: text('publishedAt').notNull(),
   isRead: integer('isRead', { mode: 'boolean' }).default(false).notNull(),
-  isFavourite: integer('isFavourite', { mode: 'boolean' }).default(false).notNull(),
+  bookmarked: integer('bookmarked', { mode: 'boolean' }).default(false).notNull(),
 })
 
 export type Article = typeof ArticleTable.$inferSelect

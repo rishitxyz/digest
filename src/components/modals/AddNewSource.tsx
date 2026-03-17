@@ -63,8 +63,16 @@ const AddNewSource = ({ visible, setVisible, onSourceAdded }: AddNewSourceProps)
     } finally {
       setLoading(false)
       setVisible(false)
+      resetStates()
       onSourceAdded()
     }
+  }
+
+  const resetStates = () => {
+    setSourceType(FeedType.RSS)
+    setSource('')
+    setSourceUrl('')
+    setLoading(false)
   }
 
   return (
