@@ -66,17 +66,20 @@ export default function SourcesListScreen({ isFocused }: SourcesListScreenProps)
           <ActivityIndicator animating={true} color={theme.colors.primary} />
         ) : (
           <View>
-            {rssSources.length && (
+            {rssSources.length > 0 && (
               <View key="rss-view">
                 <List.Section key="rss-list-section">
-                  <List.Subheader key="rss-list-header" style={{ fontWeight: 600 }}>
+                  <List.Subheader
+                    key="rss-list-header"
+                    style={{ fontSize: fontSize.bodyLarge, fontWeight: 700 }}
+                  >
                     <Text>RSS feeds</Text>
                   </List.Subheader>
                   {rssSources.map((source, index) => (
                     <React.Fragment key={source.id}>
                       <List.Item
                         title={source.name}
-                        titleStyle={{ fontWeight: '500' }}
+                        titleStyle={{ fontSize: fontSize.bodyMedium, fontWeight: '500' }}
                         left={() => <List.Icon icon="pencil-box" />}
                         // Swapped onTouchEnd for onPress, and passed the current source!
                         onPress={() => handleEditSource(source)}
@@ -91,16 +94,19 @@ export default function SourcesListScreen({ isFocused }: SourcesListScreenProps)
               </View>
             )}
             <View>
-              {subRedditSources.length && (
+              {subRedditSources.length > 0 && (
                 <List.Section key="subreddit-list-section">
-                  <List.Subheader key="subreddit-list-header" style={{ fontWeight: 600 }}>
+                  <List.Subheader
+                    key="subreddit-list-header"
+                    style={{ fontSize: fontSize.bodyLarge, fontWeight: 700 }}
+                  >
                     <Text>SubReddit feeds</Text>
                   </List.Subheader>
                   {subRedditSources.map((source, index) => (
                     <React.Fragment key={source.id}>
                       <List.Item
                         title={source.name}
-                        titleStyle={{ fontWeight: '500' }}
+                        titleStyle={{ fontSize: fontSize.bodyMedium, fontWeight: '500' }}
                         left={() => <List.Icon icon="reddit" />}
                         // Swapped onTouchEnd for onPress, and passed the current source!
                         onPress={() => handleEditSource(source)}

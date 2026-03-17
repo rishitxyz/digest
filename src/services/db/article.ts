@@ -31,6 +31,8 @@ export const toggleBookmarked = (id: string, bookmarked: boolean) => {
     })
     .where(eq(ArticleTable.id, id))
     .run()
+
+  return readById(id)
 }
 
 export const save = (createArticles: CreateArticle[]) => {

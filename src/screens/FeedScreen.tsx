@@ -1,5 +1,5 @@
-import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react'
-import { View, StyleSheet, Animated, Easing } from 'react-native'
+import React, { useState, useMemo, useCallback, useEffect } from 'react'
+import { View, StyleSheet, Animated } from 'react-native'
 import { Text, Appbar, useTheme, Icon, IconButton } from 'react-native-paper'
 import type { MD3Theme } from 'react-native-paper'
 import FeedCard from '../components/FeedCard'
@@ -13,7 +13,7 @@ import { RootStackParamList } from '../navigation/types'
 
 // Add these imports to access your Drizzle database functions
 import { getSourcesWithLatestArticles, refreshArticles } from '../services/db/source'
-import { markArticleAsRead, toggleBookmarked } from '../services/db/article' // Adjust this path to where you saved your CRUD helpers
+import { markArticleAsRead } from '../services/db/article' // Adjust this path to where you saved your CRUD helpers
 
 import AddNewSource from '../components/modals/AddNewSource'
 import { Article } from '../database/schema/article'
@@ -47,14 +47,7 @@ export default function FeedScreen({ isFocused }: FeedScreenProps) {
   // ── Data Filtering ──
   const filteredItems = useMemo(() => {
     switch (filter) {
-      case 'unread':
-        return feeds
-          .map((feed) => ({
-            ...feed,
-            articles: feed.articles.filter((article) => !article.isRead),
-          }))
-          .filter((feed) => feed.articles.length > 0)
-      case 'favorites':
+      case 'bookmarks':
         return feeds
           .map((feed) => ({
             ...feed,
@@ -66,41 +59,12 @@ export default function FeedScreen({ isFocused }: FeedScreenProps) {
     }
   }, [filter, feeds])
 
-  // ── Actions ──
-  // Updated to receive the whole article so we know its exact current state
-  const toggleBookmarkedCall = useCallback((article: Article) => {
-    const newFavoriteStatus = !article.bookmarked
-
-    // 1. Save to database in the background
-    toggleBookmarked(article.id, newFavoriteStatus)
-
-    // 2. Optimistically update UI
-    setFeeds((prev) =>
-      prev.map((group) => ({
-        ...group,
-        articles: group.articles.map((a) =>
-          a.id === article.id ? { ...a, bookmarked: newFavoriteStatus } : a,
-        ),
-      })),
-    )
-  }, [])
-
   const handleCardPress = useCallback(
     (source: Source, article: Article) => {
       // 1. Save to database in the background if it's currently unread
       if (!article.isRead) {
         markArticleAsRead(article.id)
       }
-
-      // 2. Optimistically update UI
-      setFeeds((prev) =>
-        prev.map((group) => ({
-          ...group,
-          articles: group.articles.map((article) =>
-            article.id === article.id ? { ...article, isRead: true } : article,
-          ),
-        })),
-      )
 
       if (source.type === FeedType.SUB_REDDIT)
         navigation.navigate('RedditPost', { source, post: article })
@@ -111,9 +75,9 @@ export default function FeedScreen({ isFocused }: FeedScreenProps) {
 
   const handleHeadingPress = useCallback(
     (source: Source) => {
-      navigation.navigate('AllArticles', { source, handleCardPress, toggleBookmarkedCall })
+      navigation.navigate('AllArticles', { source })
     },
-    [navigation, handleCardPress, toggleBookmarkedCall],
+    [navigation],
   )
 
   const renderItem = useCallback(
@@ -121,12 +85,10 @@ export default function FeedScreen({ isFocused }: FeedScreenProps) {
       <FeedCard
         source={section.source}
         article={item}
-        // Pass the whole item instead of just the ID to match the new signature
-        onToggleFavorite={() => toggleBookmarkedCall(item)}
         onPress={() => handleCardPress(section.source, item)}
       />
     ),
-    [toggleBookmarkedCall, handleCardPress],
+    [handleCardPress],
   )
 
   type FeedSection = {
@@ -149,29 +111,6 @@ export default function FeedScreen({ isFocused }: FeedScreenProps) {
       data: sourceWithArticles.articles,
     }))
   }, [filteredItems])
-
-  const spinAnim = useRef(new Animated.Value(0)).current
-
-  useEffect(() => {
-    if (syncing) {
-      Animated.loop(
-        Animated.timing(spinAnim, {
-          toValue: 1,
-          duration: 1000,
-          easing: Easing.linear,
-          useNativeDriver: true,
-        }),
-      ).start()
-    } else {
-      spinAnim.stopAnimation()
-      spinAnim.setValue(0)
-    }
-  }, [syncing, spinAnim])
-
-  const spin = spinAnim.interpolate({
-    inputRange: [0, 1],
-    outputRange: ['0deg', '360deg'],
-  })
 
   const handleFetchLatestData = () => {
     setSyncing(true)
@@ -198,13 +137,10 @@ export default function FeedScreen({ isFocused }: FeedScreenProps) {
           }}
         />
         <Appbar.Action
-          icon={({ size, color }) => (
-            <Animated.View style={{ transform: [{ rotate: spin }] }}>
-              <Icon source="sync" size={size} color={color} />
-            </Animated.View>
-          )}
+          icon={({ size, color }) => <Icon source="progress-download" size={size} color={color} />}
           onPress={handleFetchLatestData}
           disabled={syncing}
+          loading={syncing}
         />
         <Appbar.Action
           icon="plus"
@@ -264,11 +200,9 @@ export default function FeedScreen({ isFocused }: FeedScreenProps) {
                 marginTop: spacing.sm,
               }}
             >
-              {filter === 'favorites'
-                ? 'Heart some articles to see them here!'
-                : filter === 'unread'
-                  ? 'All caught up!'
-                  : 'Add new feeds by clicking on the plus button'}
+              {filter === 'bookmarks'
+                ? 'No bookmark articles yet.'
+                : 'Add new feeds by clicking on the plus button'}
             </Text>
           </View>
         }

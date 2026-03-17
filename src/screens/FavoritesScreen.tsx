@@ -4,14 +4,14 @@ import { Text, Appbar, useTheme, Card, IconButton } from 'react-native-paper'
 import type { MD3Theme } from 'react-native-paper'
 import { spacing, shapes, fontSize } from '../theme/theme'
 
-export default function FavoritesScreen() {
+export default function BookmarksScreen() {
   const theme = useTheme<MD3Theme>()
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <Appbar.Header elevated style={{ backgroundColor: theme.colors.surface }}>
         <Appbar.Content
-          title="Favorites"
+          title="Bookmarks"
           titleStyle={{
             fontWeight: '700',
             fontSize: fontSize.headlineSmall,
@@ -42,7 +42,7 @@ export default function FavoritesScreen() {
               variant="headlineSmall"
               style={{ color: theme.colors.onTertiaryContainer, marginTop: spacing.md }}
             >
-              Your Favorites
+              Your Bookmarks
             </Text>
             <Text
               variant="bodyMedium"

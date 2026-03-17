@@ -9,9 +9,5 @@ export type RootStackParamList = {
   // The new screen to read reddit posts with comments.
   RedditPost: { source: Source; post: Article }
   // The new screen to get all articles/posts for a source.
-  AllArticles: {
-    source: Source
-    handleCardPress: (source: Source, article: Article) => void
-    toggleBookmarkedCall: (article: Article) => void
-  }
+  AllArticles: { source: Source }
 }

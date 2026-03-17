@@ -54,6 +54,12 @@ export default function RedditPost({ route, navigation }: Props) {
       </Appbar.Header>
 
       <ScrollView contentContainerStyle={styles.content}>
+        <View style={styles.author}>
+          <Text variant="labelSmall" style={{ color: theme.colors.primary }}>
+            {post.author}
+          </Text>
+          <Text variant="labelSmall">{getRelativeTime(post.publishedAt)}</Text>
+        </View>
         <Text
           variant="headlineSmall"
           style={{ color: theme.colors.onSurface, marginBottom: spacing.md }}
@@ -66,12 +72,6 @@ export default function RedditPost({ route, navigation }: Props) {
         >
           {post.description}
         </Text>
-        <View style={styles.author}>
-          <Text variant="labelSmall" style={{ color: theme.colors.primary }}>
-            {post.author}
-          </Text>
-          <Text variant="labelSmall">{getRelativeTime(post.publishedAt)}</Text>
-        </View>
 
         <Divider
           style={{

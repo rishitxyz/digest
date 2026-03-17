@@ -12,7 +12,7 @@ import FeedCard from '../components/FeedCard'
 type Props = NativeStackScreenProps<RootStackParamList, 'AllArticles'>
 
 export default function AllArticles({ route, navigation }: Props) {
-  const { source, handleCardPress, toggleBookmarkedCall } = route.params
+  const { source } = route.params
   const [items, setItems] = useState<Article[]>([])
   const [loading, setLoading] = useState<boolean>(false)
 
@@ -23,6 +23,14 @@ export default function AllArticles({ route, navigation }: Props) {
     setItems(articleService.getAllBySourceId(source.id))
     setLoading(false)
   }, [source])
+
+  const handleCardPress = (article: Article) => {
+    if (!article.isRead) articleService.markArticleAsRead(article.id)
+
+    if (source.type === FeedType.SUB_REDDIT)
+      navigation.navigate('RedditPost', { source, post: article })
+    else navigation.navigate('ArticleDetail', { source, article })
+  }
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
@@ -41,8 +49,7 @@ export default function AllArticles({ route, navigation }: Props) {
                 key={item.id}
                 source={source}
                 article={item}
-                onPress={() => handleCardPress(source, item)}
-                onToggleFavorite={() => toggleBookmarkedCall(item)}
+                onPress={() => handleCardPress(item)}
               />
             ))}
           </List.Section>
@@ -54,7 +61,9 @@ export default function AllArticles({ route, navigation }: Props) {
 
 const styles = StyleSheet.create({
   container: { flex: 1 },
-  content: {},
+  content: {
+    paddingHorizontal: spacing.md,
+  },
   author: {
     flex: 1,
     flexDirection: 'row',

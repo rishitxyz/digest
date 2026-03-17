@@ -4,7 +4,7 @@ import { SegmentedButtons, useTheme } from 'react-native-paper'
 import type { MD3Theme } from 'react-native-paper'
 import { spacing } from '../theme/theme'
 
-export type FilterValue = 'all' | 'unread' | 'favorites'
+export type FilterValue = 'all' | 'bookmarks'
 
 interface FeedFilterProps {
   value: FilterValue
@@ -28,16 +28,9 @@ export default function FeedFilter({ value, onChange }: FeedFilterProps) {
             uncheckedColor: theme.colors.onSurfaceVariant,
           },
           {
-            value: 'unread',
-            label: 'Unread',
-            icon: 'email-outline',
-            checkedColor: theme.colors.onPrimaryContainer,
-            uncheckedColor: theme.colors.onSurfaceVariant,
-          },
-          {
-            value: 'favorites',
-            label: 'Favorites',
-            icon: 'heart-outline',
+            value: 'bookmarks',
+            label: 'Bookmarks',
+            icon: 'bookmark-outline',
             checkedColor: theme.colors.onPrimaryContainer,
             uncheckedColor: theme.colors.onSurfaceVariant,
           },

@@ -1,6 +1,6 @@
 import React from 'react'
 import { View, Image, StyleSheet } from 'react-native'
-import { Card, Text, IconButton, useTheme } from 'react-native-paper'
+import { Card, Text, useTheme } from 'react-native-paper'
 import type { MD3Theme } from 'react-native-paper'
 import { spacing, shapes } from '../theme/theme'
 import { getRelativeTime } from '../utils/date'
@@ -10,23 +10,22 @@ import { Article } from '../database/schema/article'
 interface FeedCardProps {
   source: Source
   article: Article
-  onToggleFavorite?: (id: string) => void
   onPress?: (source: Source, article: Article) => void
 }
 
-export default function FeedCard({ source, article, onToggleFavorite, onPress }: FeedCardProps) {
+export default function FeedCard({ source, article, onPress }: FeedCardProps) {
   const theme = useTheme<MD3Theme>()
 
   return (
     <Card
+      mode="contained"
       style={[
         styles.card,
         {
-          backgroundColor: theme.colors.surface,
+          // backgroundColor: theme.colors.surface,
           borderRadius: shapes.extraLarge,
         },
       ]}
-      elevation={1}
       onPress={() => onPress?.(source, article)}
     >
       {/* Hero Image */}
@@ -39,13 +38,23 @@ export default function FeedCard({ source, article, onToggleFavorite, onPress }:
         {article.imageUrl && (
           <Image source={{ uri: article.imageUrl }} style={[styles.image]} resizeMode="cover" />
         )}
-
-        {!article.isRead && (
-          <View style={[styles.unreadDot, { backgroundColor: theme.colors.primary }]} />
-        )}
       </View>
 
       <Card.Content style={styles.content}>
+        <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
+          <Text
+            variant="labelSmall"
+            style={{ color: theme.colors.primary, marginBottom: spacing.sm }}
+          >
+            {source.name}
+          </Text>
+          <Text
+            variant="labelSmall"
+            style={{ color: theme.colors.onSurfaceVariant, marginBottom: spacing.sm }}
+          >
+            {getRelativeTime(article.publishedAt)}
+          </Text>
+        </View>
         <Text
           variant="headlineSmall"
           numberOfLines={2}
@@ -64,19 +73,6 @@ export default function FeedCard({ source, article, onToggleFavorite, onPress }:
           </Text>
         )}
       </Card.Content>
-
-      {/* Actions */}
-      <View style={styles.actions}>
-        <Text variant="labelSmall" style={{ color: theme.colors.onSurfaceVariant }}>
-          {getRelativeTime(article.publishedAt)}
-        </Text>
-        <IconButton
-          icon={article.bookmarked ? 'bookmark-check' : 'bookmark-plus-outline'}
-          iconColor={article.bookmarked ? theme.colors.error : theme.colors.onSurfaceVariant}
-          size={22}
-          onPress={() => onToggleFavorite?.(article.id)}
-        />
-      </View>
     </Card>
   )
 }
@@ -92,14 +88,6 @@ const styles = StyleSheet.create({
   image: {
     width: '100%',
     height: 200,
-  },
-  unreadDot: {
-    position: 'absolute',
-    top: spacing.md,
-    right: spacing.md,
-    width: 10,
-    height: 10,
-    borderRadius: 5,
   },
   content: {
     paddingHorizontal: spacing.lg,
@@ -118,13 +106,5 @@ const styles = StyleSheet.create({
   },
   summary: {
     lineHeight: 22,
-  },
-  actions: {
-    flex: 1,
-    flexDirection: 'row',
-    justifyContent: 'space-between',
-    alignItems: 'center',
-    paddingHorizontal: spacing.lg,
-    paddingBottom: spacing.xs,
   },
 })

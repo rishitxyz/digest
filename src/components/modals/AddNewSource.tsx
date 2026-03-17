@@ -51,7 +51,7 @@ const AddNewSource = ({ visible, setVisible, onSourceAdded }: AddNewSourceProps)
 
       const newSource = sourceService.insertNew({
         id: source.trim().toLowerCase(),
-        name: source,
+        name: sourceType === FeedType.SUB_REDDIT ? `r/${source}` : source,
         type: finalType,
         url: sourceType === FeedType.SUB_REDDIT ? `r/${finalUrl!}` : finalUrl!,
       })
@@ -112,7 +112,7 @@ const AddNewSource = ({ visible, setVisible, onSourceAdded }: AddNewSourceProps)
             textContentType="name"
             label="Give it a name"
             value={source}
-            onChangeText={(text) => setSource(text)}
+            onChangeText={(text) => setSource(text.trim().toLowerCase())}
             left={<TextInput.Affix text={sourceType === FeedType.SUB_REDDIT ? 'r/' : ''} />}
           />
           <TextInput
@@ -121,9 +121,7 @@ const AddNewSource = ({ visible, setVisible, onSourceAdded }: AddNewSourceProps)
             label={sourceType === FeedType.RSS ? 'Feed URL' : 'Subreddit name'}
             value={sourceUrl}
             onChangeText={(text) => {
-              text.trim()
-              text = text.toLowerCase()
-              setSourceUrl(text)
+              setSourceUrl(text.trim().toLowerCase())
             }}
             left={<TextInput.Affix text={sourceType === FeedType.SUB_REDDIT ? 'r/' : ''} />}
           />

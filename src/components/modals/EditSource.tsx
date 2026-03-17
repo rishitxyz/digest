@@ -31,6 +31,7 @@ const EditSource = ({ source, visible, setVisible }: EditSourceProps) => {
     setLoading(true)
     sourceService.deleteById(source.id)
     setLoading(false)
+    setVisible(false)
   }
 
   return (
@@ -71,7 +72,11 @@ const EditSource = ({ source, visible, setVisible }: EditSourceProps) => {
             style={{ flexDirection: 'row', justifyContent: 'space-between', marginTop: spacing.md }}
           >
             <View>
-              <Button textColor={theme.colors.error} onTouchEnd={handleDeleteSource}>
+              <Button
+                textColor={theme.colors.error}
+                onTouchEnd={handleDeleteSource}
+                loading={loading}
+              >
                 Delete
               </Button>
             </View>
@@ -88,6 +93,7 @@ const EditSource = ({ source, visible, setVisible }: EditSourceProps) => {
                 textColor={theme.colors.primary}
                 onTouchEnd={handleUpdateSource}
                 disabled={name === source.name && url === source.url}
+                loading={loading}
               >
                 Update
               </Button>
