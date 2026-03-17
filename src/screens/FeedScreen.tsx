@@ -1,9 +1,8 @@
 import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import { View, StyleSheet, Animated, Easing } from 'react-native'
-import { Text, Appbar, useTheme, Icon, Button } from 'react-native-paper'
+import { Text, Appbar, useTheme, Icon, IconButton } from 'react-native-paper'
 import type { MD3Theme } from 'react-native-paper'
 import FeedCard from '../components/FeedCard'
-import AnimatedFAB from '../components/AnimatedFAB'
 import FeedFilter, { FilterValue } from '../components/FeedFilter'
 import { useScrollAnimation } from '../hooks/useScrollAnimation'
 import { fontSize, spacing } from '../theme/theme'
@@ -183,9 +182,15 @@ export default function FeedScreen({ isFocused }: FeedScreenProps) {
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       {/* App Bar */}
-      <Appbar.Header elevated style={{ backgroundColor: theme.colors.surface }}>
+      <Appbar.Header
+        elevated
+        style={{
+          backgroundColor: theme.colors.surface,
+        }}
+      >
         <Appbar.Content
           title="ReadIt"
+          style={{ alignItems: 'flex-start', marginLeft: 0 }}
           titleStyle={{
             fontWeight: '700',
             fontSize: fontSize.headlineSmall,
@@ -201,6 +206,12 @@ export default function FeedScreen({ isFocused }: FeedScreenProps) {
           onPress={handleFetchLatestData}
           disabled={syncing}
         />
+        <Appbar.Action
+          icon="plus"
+          onPress={() => {
+            setAddNewSource(!addNewSource)
+          }}
+        />
       </Appbar.Header>
 
       <FeedFilter value={filter} onChange={setFilter} />
@@ -215,6 +226,7 @@ export default function FeedScreen({ isFocused }: FeedScreenProps) {
               flex: 1,
               flexDirection: 'row',
               justifyContent: 'space-between',
+              alignItems: 'center',
               paddingHorizontal: spacing.md,
               paddingVertical: spacing.sm,
               backgroundColor: theme.colors.background,
@@ -223,11 +235,13 @@ export default function FeedScreen({ isFocused }: FeedScreenProps) {
             <Text variant="titleLarge" style={{ color: theme.colors.primary, fontWeight: 'bold' }}>
               {source.type === FeedType.SUB_REDDIT ? source.url : title}
             </Text>
-            <Button onPress={() => handleHeadingPress(source)}>
-              <Text style={{ color: theme.colors.primary }}>
-                View all <Icon source="chevron-right" size={fontSize.bodyMedium} />
-              </Text>
-            </Button>
+            <IconButton
+              icon="chevron-right"
+              mode="contained"
+              size={10}
+              animated
+              onPress={() => handleHeadingPress(source)}
+            />
           </View>
         )}
         onScroll={onScroll}
@@ -260,13 +274,6 @@ export default function FeedScreen({ isFocused }: FeedScreenProps) {
           </View>
         }
       />
-      <AnimatedFAB
-        animValue={fabAnimValue}
-        icon={addNewSource ? 'close' : 'plus'}
-        onPress={() => {
-          setAddNewSource(!addNewSource)
-        }}
-      />
 
       {/* Pass the loadFeeds function as a prop so the modal can trigger a refresh! */}
       <AddNewSource visible={addNewSource} setVisible={setAddNewSource} onSourceAdded={loadFeeds} />
@@ -279,7 +286,7 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   listContent: {
-    paddingBottom: 96, // Space for FAB
+    paddingHorizontal: spacing.md,
   },
   emptyContainer: {
     flex: 1,

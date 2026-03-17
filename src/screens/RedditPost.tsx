@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { ScrollView, StyleSheet, View } from 'react-native'
-import { Text, Appbar, List, Divider, Icon, useTheme } from 'react-native-paper'
+import { Text, Appbar, List, Divider, Icon, useTheme, ActivityIndicator } from 'react-native-paper'
 import { spacing, shapes, fontSize } from '../theme/theme'
 import { getRelativeTime } from '../utils/date'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
@@ -18,15 +18,25 @@ interface Comment {
 export default function RedditPost({ route, navigation }: Props) {
   const { post, source } = route.params
   const [comments, setComments] = useState<Comment[]>([])
+  const [commentsLoading, setCommentsLoading] = useState<boolean>(Boolean(post.link))
   const theme = useTheme()
 
   useEffect(() => {
     let ignore = false
 
     async function load() {
-      if (!post.link) return
-      const postComments = await fetchComments(post.link)
-      if (!ignore) setComments(postComments)
+      if (!post.link) {
+        if (!ignore) setCommentsLoading(false)
+        return
+      }
+
+      if (!ignore) setCommentsLoading(true)
+      try {
+        const postComments = await fetchComments(post.link)
+        if (!ignore) setComments(postComments)
+      } finally {
+        if (!ignore) setCommentsLoading(false)
+      }
     }
 
     void load()
@@ -76,7 +86,13 @@ export default function RedditPost({ route, navigation }: Props) {
             <List.Subheader style={{ color: theme.colors.primary, fontWeight: '600' }}>
               Comments
             </List.Subheader>
-            {comments.length === 0 ? (
+            {commentsLoading ? (
+              <ActivityIndicator
+                animating
+                style={{ marginTop: spacing.sm }}
+                color={theme.colors.primary}
+              />
+            ) : comments.length === 0 ? (
               <Text variant="bodyMedium" style={{ color: theme.colors.onSurfaceVariant }}>
                 No comments yet.
               </Text>

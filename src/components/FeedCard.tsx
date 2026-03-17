@@ -6,6 +6,7 @@ import { spacing, shapes } from '../theme/theme'
 import { getRelativeTime } from '../utils/date'
 import { Source } from '../database/schema/source'
 import { Article } from '../database/schema/article'
+import { FeedType } from '../config/feed-source'
 
 const DEFAULT_IMAGE = require('../../assets/defaults/article-default.png')
 
@@ -38,11 +39,9 @@ export default function FeedCard({ source, article, onToggleFavorite, onPress }:
           { borderTopLeftRadius: shapes.extraLarge, borderTopRightRadius: shapes.extraLarge },
         ]}
       >
-        <Image
-          source={article.imageUrl ? { uri: article.imageUrl } : DEFAULT_IMAGE}
-          style={[styles.image]}
-          resizeMode="cover"
-        />
+        {article.imageUrl && (
+          <Image source={{ uri: article.imageUrl }} style={[styles.image]} resizeMode="cover" />
+        )}
 
         {!article.isRead && (
           <View style={[styles.unreadDot, { backgroundColor: theme.colors.primary }]} />
@@ -52,7 +51,7 @@ export default function FeedCard({ source, article, onToggleFavorite, onPress }:
       <Card.Content style={styles.content}>
         <View style={styles.metaRow}>
           <Text variant="labelMedium" style={{ color: theme.colors.primary, fontWeight: '600' }}>
-            {source.name}
+            {source.type === FeedType.SUB_REDDIT ? source.url : source.name}
           </Text>
           <Text variant="labelSmall" style={{ color: theme.colors.onSurfaceVariant }}>
             {getRelativeTime(article.publishedAt)}
@@ -84,12 +83,6 @@ export default function FeedCard({ source, article, onToggleFavorite, onPress }:
           size={22}
           onPress={() => onToggleFavorite?.(article.id)}
         />
-        <IconButton
-          icon="share-variant"
-          iconColor={theme.colors.onSurfaceVariant}
-          size={22}
-          onPress={() => {}}
-        />
       </View>
     </Card>
   )
@@ -97,7 +90,6 @@ export default function FeedCard({ source, article, onToggleFavorite, onPress }:
 
 const styles = StyleSheet.create({
   card: {
-    marginHorizontal: spacing.lg,
     marginVertical: spacing.sm,
     overflow: 'hidden',
   },

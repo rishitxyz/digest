@@ -1,7 +1,6 @@
 import * as React from 'react'
 import { View } from 'react-native'
 import {
-  ActivityIndicator,
   Button,
   MD3Theme,
   Modal,
@@ -127,8 +126,9 @@ const AddNewSource = ({ visible, setVisible, onSourceAdded }: AddNewSourceProps)
             mode="contained"
             onTouchEnd={addNewSource}
             disabled={source === undefined || source === null || source === ''}
+            loading={loading}
           >
-            {loading ? <ActivityIndicator color="#FFFFFF" /> : 'Add'}
+            Add
           </Button>
         </View>
       </Modal>
