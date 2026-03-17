@@ -1,6 +1,15 @@
-import { eq, sql } from 'drizzle-orm'
+import { desc, eq, sql } from 'drizzle-orm'
 import { db } from '../../database/schema'
 import { Article, ArticleTable, CreateArticle } from '../../database/schema/article'
+
+export const getAllBySourceId = (sourceId: string): Article[] => {
+  return db
+    .select()
+    .from(ArticleTable)
+    .where(eq(ArticleTable.sourceId, sourceId))
+    .orderBy(desc(ArticleTable.publishedAt))
+    .all()
+}
 
 export const readById = (id: string): Article | undefined => {
   return db.select().from(ArticleTable).where(eq(ArticleTable.id, id)).get()

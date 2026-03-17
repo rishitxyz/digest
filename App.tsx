@@ -38,6 +38,7 @@ import SourcesListScreen from './src/screens/SourcesScreen'
 import { fontOptions, fontOptionsType } from './src/theme/font'
 import { storage, STORAGE_KEYS } from './src/database/mmkv'
 import RedditPost from './src/screens/RedditPost'
+import AllArticles from './src/screens/AllArticles'
 
 initializeDatabase()
 
@@ -215,6 +216,7 @@ export default function App() {
             </Stack.Screen>
             <Stack.Screen name="ArticleDetail" component={ArticleScreen} />
             <Stack.Screen name="RedditPost" component={RedditPost} />
+            <Stack.Screen name="AllArticles" component={AllArticles} />
           </Stack.Navigator>
         </NavigationContainer>
       </PaperProvider>

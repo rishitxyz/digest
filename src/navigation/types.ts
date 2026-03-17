@@ -8,4 +8,10 @@ export type RootStackParamList = {
   ArticleDetail: { source: Source; article: Article }
   // The new screen to read reddit posts with comments.
   RedditPost: { source: Source; post: Article }
+  // The new screen to get all articles/posts for a source.
+  AllArticles: {
+    source: Source
+    handleCardPress: (source: Source, article: Article) => void
+    toggleFavouriteCall: (article: Article) => void
+  }
 }

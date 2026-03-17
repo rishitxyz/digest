@@ -1,6 +1,6 @@
 import React, { useState, useMemo, useCallback, useEffect, useRef } from 'react'
 import { View, StyleSheet, Animated, Easing } from 'react-native'
-import { Text, Appbar, useTheme, Icon } from 'react-native-paper'
+import { Text, Appbar, useTheme, Icon, Button } from 'react-native-paper'
 import type { MD3Theme } from 'react-native-paper'
 import FeedCard from '../components/FeedCard'
 import AnimatedFAB from '../components/AnimatedFAB'
@@ -69,7 +69,7 @@ export default function FeedScreen({ isFocused }: FeedScreenProps) {
 
   // ── Actions ──
   // Updated to receive the whole article so we know its exact current state
-  const toggleFavoriteCall = useCallback((article: Article) => {
+  const toggleFavouriteCall = useCallback((article: Article) => {
     const newFavoriteStatus = !article.isFavourite
 
     // 1. Save to database in the background
@@ -110,17 +110,24 @@ export default function FeedScreen({ isFocused }: FeedScreenProps) {
     [navigation],
   )
 
+  const handleHeadingPress = useCallback(
+    (source: Source) => {
+      navigation.navigate('AllArticles', { source, handleCardPress, toggleFavouriteCall })
+    },
+    [navigation, handleCardPress, toggleFavouriteCall],
+  )
+
   const renderItem = useCallback(
     ({ item, section }: { item: Article; section: { title: string; source: Source } }) => (
       <FeedCard
         source={section.source}
         article={item}
         // Pass the whole item instead of just the ID to match the new signature
-        onToggleFavorite={() => toggleFavoriteCall(item)}
+        onToggleFavorite={() => toggleFavouriteCall(item)}
         onPress={() => handleCardPress(section.source, item)}
       />
     ),
-    [toggleFavoriteCall, handleCardPress],
+    [toggleFavouriteCall, handleCardPress],
   )
 
   type FeedSection = {
@@ -202,17 +209,25 @@ export default function FeedScreen({ isFocused }: FeedScreenProps) {
         sections={sections}
         keyExtractor={(item, index) => item.id + index}
         renderItem={renderItem}
-        renderSectionHeader={({ section: { title } }) => (
+        renderSectionHeader={({ section: { title, source } }) => (
           <View
             style={{
+              flex: 1,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
               paddingHorizontal: spacing.md,
               paddingVertical: spacing.sm,
               backgroundColor: theme.colors.background,
             }}
           >
             <Text variant="titleLarge" style={{ color: theme.colors.primary, fontWeight: 'bold' }}>
-              {title}
+              {source.type === FeedType.SUB_REDDIT ? source.url : title}
             </Text>
+            <Button onPress={() => handleHeadingPress(source)}>
+              <Text style={{ color: theme.colors.primary }}>
+                View all <Icon source="chevron-right" size={fontSize.bodyMedium} />
+              </Text>
+            </Button>
           </View>
         )}
         onScroll={onScroll}
