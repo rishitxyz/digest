@@ -6,15 +6,30 @@ import { spacing, shapes } from '../theme/theme'
 import { getRelativeTime } from '../utils/date'
 import { Source } from '../database/schema/source'
 import { Article } from '../database/schema/article'
+import { markArticleAsRead } from '../services/db/article'
+import { FeedType } from '../config/feed-source'
+import { useNavigation } from '@react-navigation/native'
+import { NativeStackNavigationProp } from '@react-navigation/native-stack'
+import { RootStackParamList } from '../navigation/types'
 
 interface FeedCardProps {
   source: Source
   article: Article
-  onPress?: (source: Source, article: Article) => void
 }
 
-export default function FeedCard({ source, article, onPress }: FeedCardProps) {
+export default function FeedCard({ source, article }: FeedCardProps) {
+  const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
   const theme = useTheme<MD3Theme>()
+
+  const handleCardPress = (source: Source, article: Article) => {
+    if (!article.isRead) {
+      markArticleAsRead(article.id)
+    }
+
+    if (source.type === FeedType.SUB_REDDIT)
+      navigation.navigate('RedditPost', { source, id: article.id })
+    else navigation.navigate('ArticleDetail', { source, id: article.id })
+  }
 
   return (
     <Card
@@ -26,7 +41,7 @@ export default function FeedCard({ source, article, onPress }: FeedCardProps) {
           borderRadius: shapes.extraLarge,
         },
       ]}
-      onPress={() => onPress?.(source, article)}
+      onPress={() => handleCardPress(source, article)}
     >
       {/* Hero Image */}
       <View

@@ -49,11 +49,13 @@ export const deleteById = (id: string): undefined => {
 }
 
 export const getSourcesWithLatestArticles = async (
+  fetchBookmarksOnly: boolean = false,
   limit: number = 3,
 ): Promise<SourceWithArticles[]> => {
   return await db.query.SourceTable.findMany({
     with: {
       articles: {
+        where: (article, { eq }) => (fetchBookmarksOnly ? eq(article.bookmarked, true) : undefined),
         orderBy: [desc(ArticleTable.publishedAt)],
         limit,
       },

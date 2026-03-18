@@ -13,7 +13,6 @@ import { RootStackParamList } from '../navigation/types'
 
 // Add these imports to access your Drizzle database functions
 import { getSourcesWithLatestArticles, refreshArticles } from '../services/db/source'
-import { markArticleAsRead } from '../services/db/article' // Adjust this path to where you saved your CRUD helpers
 
 import AddNewSource from '../components/modals/AddNewSource'
 import { Article } from '../database/schema/article'
@@ -35,43 +34,26 @@ export default function FeedScreen({ isFocused }: FeedScreenProps) {
 
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
 
-  // ── Database Fetching ──
   const loadFeeds = useCallback(async () => {
-    if (isFocused) setFeeds(await getSourcesWithLatestArticles())
-  }, [isFocused])
-
-  useEffect(() => {
-    loadFeeds()
-  }, [loadFeeds])
-
-  // ── Data Filtering ──
-  const filteredItems = useMemo(() => {
+    let fetchBookmarksOnly = false
     switch (filter) {
       case 'bookmarks':
-        return feeds
-          .map((feed) => ({
-            ...feed,
-            articles: feed.articles.filter((article) => article.bookmarked),
-          }))
-          .filter((feed) => feed.articles.length > 0)
+        fetchBookmarksOnly = true
+        break
       default:
-        return feeds
+        fetchBookmarksOnly = false
+        break
     }
-  }, [filter, feeds])
 
-  const handleCardPress = useCallback(
-    (source: Source, article: Article) => {
-      // 1. Save to database in the background if it's currently unread
-      if (!article.isRead) {
-        markArticleAsRead(article.id)
-      }
+    const nextFeeds = await getSourcesWithLatestArticles(fetchBookmarksOnly)
+    setFeeds(nextFeeds.filter((feed) => feed.articles.length > 0))
+  }, [filter])
 
-      if (source.type === FeedType.SUB_REDDIT)
-        navigation.navigate('RedditPost', { source, id: article.id })
-      else navigation.navigate('ArticleDetail', { source, id: article.id })
-    },
-    [navigation],
-  )
+  useEffect(() => {
+    void loadFeeds()
+  }, [loadFeeds, isFocused])
+
+  const filteredItems = useMemo(() => feeds.filter((s) => s.showOnFeed), [feeds])
 
   const handleHeadingPress = useCallback(
     (source: Source) => {
@@ -82,13 +64,9 @@ export default function FeedScreen({ isFocused }: FeedScreenProps) {
 
   const renderItem = useCallback(
     ({ item, section }: { item: Article; section: { title: string; source: Source } }) => (
-      <FeedCard
-        source={section.source}
-        article={item}
-        onPress={() => handleCardPress(section.source, item)}
-      />
+      <FeedCard source={section.source} article={item} />
     ),
-    [handleCardPress],
+    [],
   )
 
   type FeedSection = {
@@ -112,10 +90,14 @@ export default function FeedScreen({ isFocused }: FeedScreenProps) {
     }))
   }, [filteredItems])
 
-  const handleFetchLatestData = () => {
+  const handleFetchLatestData = async () => {
     setSyncing(true)
-    refreshArticles()
-    setSyncing(false)
+    try {
+      refreshArticles()
+      await loadFeeds()
+    } finally {
+      setSyncing(false)
+    }
   }
 
   return (
