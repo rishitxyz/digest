@@ -11,8 +11,8 @@ export const getAllBySourceId = (sourceId: string): Article[] => {
     .all()
 }
 
-export const readById = (id: string): Article | undefined => {
-  return db.select().from(ArticleTable).where(eq(ArticleTable.id, id)).get()
+export const readById = (id: string): Article => {
+  return db.select().from(ArticleTable).where(eq(ArticleTable.id, id)).get()!
 }
 
 export const markArticleAsRead = (id: string) => {

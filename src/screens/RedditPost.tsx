@@ -6,6 +6,8 @@ import { getRelativeTime } from '../utils/date'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { RootStackParamList } from '../navigation/types'
 import { fetchComments } from '../parser/reddit-json'
+import * as articleService from '../services/db/article'
+import { Article } from '../database/schema/article'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'RedditPost'>
 
@@ -16,7 +18,8 @@ interface Comment {
 }
 
 export default function RedditPost({ route, navigation }: Props) {
-  const { post, source } = route.params
+  const { id, source } = route.params
+  const [post, setPost] = useState<Article>(articleService.readById(id))
   const [comments, setComments] = useState<Comment[]>([])
   const [commentsLoading, setCommentsLoading] = useState<boolean>(Boolean(post.link))
   const theme = useTheme()
@@ -46,11 +49,23 @@ export default function RedditPost({ route, navigation }: Props) {
     }
   }, [post.link])
 
+  const handleBookmark = () => {
+    articleService.toggleBookmarked(post.id, !post.bookmarked)
+    setPost({
+      ...post,
+      bookmarked: !post.bookmarked,
+    })
+  }
+
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       <Appbar.Header elevated style={{ backgroundColor: theme.colors.surface }}>
         <Appbar.BackAction onPress={() => navigation.goBack()} />
         <Appbar.Content title={source.url || 'Post'} />
+        <Appbar.Action
+          icon={post.bookmarked ? 'bookmark-check' : 'bookmark-plus-outline'}
+          onPress={handleBookmark}
+        />
       </Appbar.Header>
 
       <ScrollView contentContainerStyle={styles.content}>

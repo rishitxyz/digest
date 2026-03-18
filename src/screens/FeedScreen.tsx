@@ -67,8 +67,8 @@ export default function FeedScreen({ isFocused }: FeedScreenProps) {
       }
 
       if (source.type === FeedType.SUB_REDDIT)
-        navigation.navigate('RedditPost', { source, post: article })
-      else navigation.navigate('ArticleDetail', { source, article })
+        navigation.navigate('RedditPost', { source, id: article.id })
+      else navigation.navigate('ArticleDetail', { source, id: article.id })
     },
     [navigation],
   )

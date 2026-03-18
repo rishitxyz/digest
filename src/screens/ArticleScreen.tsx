@@ -1,4 +1,3 @@
-// src/screens/ArticleDetailScreen.tsx
 import React, { useState } from 'react'
 import { ScrollView, StyleSheet, View, Image } from 'react-native'
 import { Text, Appbar, useTheme } from 'react-native-paper'
@@ -8,25 +7,26 @@ import { spacing, shapes } from '../theme/theme'
 import { getRelativeTime } from '../utils/date'
 import { toggleBookmarked } from '../services/db/article'
 import { Article } from '../database/schema/article'
+import * as articleService from '../services/db/article'
 
 const DEFAULT_IMAGE = require('../../assets/defaults/article-default.png')
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ArticleDetail'>
 
 export default function ArticleDetailScreen({ route, navigation }: Props) {
-  const { article: articleParam, source } = route.params
-  const [article, setArticle] = useState<Article>(articleParam)
+  const { id, source } = route.params
+  const [article, setArticle] = useState<Article>(articleService.readById(id))
   const [loading, setLoading] = useState<boolean>(false)
   const theme = useTheme()
 
   const handleBookmarkArticle = () => {
+    if (!article) return
     setLoading(true)
     const updatedArticle = toggleBookmarked(article.id, !article.bookmarked)
     console.log(updatedArticle)
     setArticle(updatedArticle)
     setLoading(false)
   }
-
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       {/* M3 App Bar with a back button */}
