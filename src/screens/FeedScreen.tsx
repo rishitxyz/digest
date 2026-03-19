@@ -93,7 +93,7 @@ export default function FeedScreen({ isFocused }: FeedScreenProps) {
   const handleFetchLatestData = async () => {
     setSyncing(true)
     try {
-      refreshArticles()
+      await refreshArticles()
       await loadFeeds()
     } finally {
       setSyncing(false)

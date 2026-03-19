@@ -33,21 +33,39 @@ export const fetchPosts = async (
 
 // Example permalink: /r/androidapps/comments/1abcde/some_post_title/
 export const fetchComments = async (permalink: string) => {
-  const response = await fetch(`https://www.reddit.com${permalink}.json`)
-  const json = await response.json()
+  try {
+    const url = `https://www.reddit.com${permalink}.json`
+    const response = await fetch(url)
+    const json = await response.json()
 
-  // Reddit returns an array of TWO listings for a post:
-  // json[0] is the original post data
-  // json[1] is the comments tree
+    // json[0] is the post, json[1] is the comment tree
+    const commentsData = json[1].data.children
 
-  const commentsData = json[1].data.children
+    // 1. Create a recursive parsing function
+    const parseComments = (children: any[]): any[] => {
+      return children
+        .filter((child) => child.kind === 't1') // Ignore 'more' stubs
+        .map((child) => {
+          const data = child.data
+          let nestedReplies = []
 
-  const comments = commentsData.map((child: any) => ({
-    id: child.data.id,
-    author: child.data.author,
-    body: child.data.body, // The actual comment text
-    score: child.data.score, // Upvotes
-  }))
+          // 2. Check if replies exist AND are an object (not an empty string)
+          if (data.replies && typeof data.replies === 'object') {
+            nestedReplies = parseComments(data.replies.data.children)
+          }
 
-  return comments
+          return {
+            author: data.author,
+            body: data.body,
+            score: data.score,
+            replies: nestedReplies, // 3. Attach them here!
+          }
+        })
+    }
+
+    return parseComments(commentsData)
+  } catch (error) {
+    console.error('Failed to fetch comments', error)
+    return []
+  }
 }

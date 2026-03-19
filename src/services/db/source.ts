@@ -63,8 +63,8 @@ export const getSourcesWithLatestArticles = async (
   })
 }
 
-export const refreshArticles = () => {
+export const refreshArticles = async () => {
   const { rss, subReddits } = getAllSources()
-  fetchAll(rss)
-  fetchAllSubReddits(subReddits)
+  await fetchAll(rss)
+  await fetchAllSubReddits(subReddits)
 }
