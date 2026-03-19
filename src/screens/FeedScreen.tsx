@@ -132,12 +132,15 @@ export default function FeedScreen({ isFocused }: FeedScreenProps) {
         />
       </Appbar.Header>
 
-      <FeedFilter value={filter} onChange={setFilter} />
-
       <Animated.SectionList
         sections={sections}
         keyExtractor={(item, index) => item.id + index}
         renderItem={renderItem}
+        ListHeaderComponent={
+          <View style={{ marginBottom: spacing.sm, paddingTop: spacing.sm }}>
+            <FeedFilter value={filter} onChange={setFilter} />
+          </View>
+        }
         renderSectionHeader={({ section: { title, source } }) => (
           <View
             style={{

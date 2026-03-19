@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { ScrollView, StyleSheet, View } from 'react-native'
 import { Text, Appbar, List, Divider, Icon, useTheme, ActivityIndicator } from 'react-native-paper'
+import { EnrichedMarkdownText } from 'react-native-enriched-markdown'
 import { spacing, shapes, fontSize } from '../theme/theme'
 import { getRelativeTime } from '../utils/date'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
@@ -142,12 +143,33 @@ export default function RedditPost({ route, navigation }: Props) {
         >
           {post.title}
         </Text>
-        <Text
-          variant="bodyLarge"
-          style={{ color: theme.colors.onSurfaceVariant, marginTop: spacing.md }}
-        >
-          {post.description}
-        </Text>
+        <View>
+          <EnrichedMarkdownText
+            markdown={post.description}
+            markdownStyle={{
+              paragraph: {
+                color: theme.colors.secondary,
+                fontFamily: theme.fonts.bodyMedium.fontFamily, // Use your dynamic fonts!
+                fontSize: 14,
+                lineHeight: 24,
+              },
+              list: {
+                fontSize: 14,
+                fontFamily: theme.fonts.bodyMedium.fontFamily, // Use your dynamic fonts!
+                color: theme.colors.secondary,
+              },
+              link: {
+                color: theme.colors.primary,
+                underline: true,
+              },
+              strong: {
+                fontFamily: theme.fonts.titleMedium.fontFamily, // Assuming this is your semi-bold/bold variant
+                fontWeight: 'bold', // Sometimes the package still needs this as a hint
+                color: theme.colors.onSurface,
+              },
+            }}
+          />
+        </View>
 
         <Divider
           style={{
