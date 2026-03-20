@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react'
 import { ScrollView, StyleSheet, View } from 'react-native'
 import { Text, Appbar, List, Divider, Icon, useTheme, ActivityIndicator } from 'react-native-paper'
-import { EnrichedMarkdownText } from 'react-native-enriched-markdown'
 import { spacing, shapes, fontSize } from '../theme/theme'
 import { getRelativeTime } from '../utils/date'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
@@ -9,6 +8,7 @@ import { RootStackParamList } from '../navigation/types'
 import { fetchComments } from '../parser/reddit-json'
 import * as articleService from '../services/db/article'
 import { Article } from '../database/schema/article'
+import { MarkdownText } from '../components/markdown-text'
 interface Comment {
   author: string
   body: string
@@ -43,7 +43,7 @@ const CommentThread = ({ comment, depth = 0 }: { comment: Comment; depth?: numbe
             </Text>
           </View>
         )}
-        description={comment.body}
+        description={<MarkdownText markdown={comment.body} />}
         titleNumberOfLines={1}
         descriptionNumberOfLines={0}
         titleStyle={{ fontSize: 13, fontWeight: '500', color: theme.colors.primary }}
@@ -144,31 +144,7 @@ export default function RedditPost({ route, navigation }: Props) {
           {post.title}
         </Text>
         <View>
-          <EnrichedMarkdownText
-            markdown={post.description}
-            markdownStyle={{
-              paragraph: {
-                color: theme.colors.secondary,
-                fontFamily: theme.fonts.bodyMedium.fontFamily, // Use your dynamic fonts!
-                fontSize: 14,
-                lineHeight: 24,
-              },
-              list: {
-                fontSize: 14,
-                fontFamily: theme.fonts.bodyMedium.fontFamily, // Use your dynamic fonts!
-                color: theme.colors.secondary,
-              },
-              link: {
-                color: theme.colors.primary,
-                underline: true,
-              },
-              strong: {
-                fontFamily: theme.fonts.titleMedium.fontFamily, // Assuming this is your semi-bold/bold variant
-                fontWeight: 'bold', // Sometimes the package still needs this as a hint
-                color: theme.colors.onSurface,
-              },
-            }}
-          />
+          <MarkdownText markdown={post.description} />
         </View>
 
         <Divider
@@ -180,10 +156,12 @@ export default function RedditPost({ route, navigation }: Props) {
         />
 
         <View>
+          <Text
+            style={{ marginVertical: spacing.md, color: theme.colors.primary, fontWeight: '600' }}
+          >
+            Comments
+          </Text>
           <List.Section>
-            <List.Subheader style={{ color: theme.colors.primary, fontWeight: '600' }}>
-              Comments
-            </List.Subheader>
             {commentsLoading ? (
               <ActivityIndicator
                 animating
