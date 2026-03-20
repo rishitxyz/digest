@@ -3,10 +3,10 @@ import { View, StyleSheet, ScrollView } from 'react-native'
 import { Appbar, List, Switch, Divider, Menu, useTheme, Button } from 'react-native-paper'
 import type { MD3Theme } from 'react-native-paper'
 import { clearAllDeviceData, exportDb } from '../utils/user-data'
-import { fontOptions, fontOptionsType } from '../theme/font'
+import { fontOptions, fontOptionsType } from '../hooks/useAppFonts'
 import { fontSize } from '../theme/theme'
 
-interface SettingsScreenProps {
+interface SettingsProps {
   isFocused: boolean
   isDarkMode: boolean
   onToggleDarkMode: () => void
@@ -15,13 +15,13 @@ interface SettingsScreenProps {
   onGoToFeeds: () => void
 }
 
-export default function SettingsScreen({
+export default function Settings({
   isDarkMode,
   onToggleDarkMode,
   currentFont,
   onChangeFont,
   onGoToFeeds,
-}: SettingsScreenProps) {
+}: SettingsProps) {
   const [openFontMenu, setOpenFontMenu] = useState<boolean>(false)
   const theme = useTheme<MD3Theme>()
 

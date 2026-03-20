@@ -13,7 +13,7 @@ const DEFAULT_IMAGE = require('../../assets/defaults/article-default.png')
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ArticleDetail'>
 
-export default function ArticleDetailScreen({ route, navigation }: Props) {
+export default function ArticleScreen({ route, navigation }: Props) {
   const { id, source } = route.params
   const [article, setArticle] = useState<Article>(articleService.readById(id))
   const [loading, setLoading] = useState<boolean>(false)

@@ -14,7 +14,13 @@ import {
   Poppins_700Bold,
 } from '@expo-google-fonts/poppins'
 import { storage, STORAGE_KEYS } from '../database/mmkv'
-import { fontOptions, fontOptionsType } from '../theme/font'
+
+export type fontOptionsType = 'FiraSans' | 'Poppins'
+
+export const fontOptions = {
+  firaSans: { displayName: 'Fira Sans', value: 'FiraSans' },
+  poppins: { displayName: 'Poppins', value: 'Poppins' },
+}
 
 export const SUPPORTED_FONTS = {
   // Fira Sans

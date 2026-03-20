@@ -9,19 +9,18 @@ import * as SplashScreen from 'expo-splash-screen'
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
 import { RootStackParamList } from './src/navigation/types'
-import ArticleScreen from './src/screens/ArticleScreen'
+import ArticleScreen from './src/screens/Article'
 
 import { Route, routes } from './src/routes'
 import { getAppTheme } from './src/theme/theme'
 
-import FeedScreen from './src/screens/FeedScreen'
-import SettingsScreen from './src/screens/SettingsScreen'
+import FeedScreen from './src/screens/Feeds'
+import Settings from './src/screens/Settings'
 import { initializeDatabase } from './src/database/schema'
-import SourcesListScreen from './src/screens/SourcesScreen'
-import { fontOptionsType } from './src/theme/font'
+import SourcesList from './src/screens/Sources'
 import RedditPost from './src/screens/RedditPost'
 import AllArticles from './src/screens/AllArticles'
-import { useAppFonts } from './src/hooks/useAppFonts'
+import { fontOptionsType, useAppFonts } from './src/hooks/useAppFonts'
 import { useAppTheme } from './src/hooks/useAppTheme'
 
 initializeDatabase()
@@ -54,10 +53,10 @@ function AppContent({
         case 'feeds':
           return <FeedScreen isFocused={isFocused} />
         case 'sources':
-          return <SourcesListScreen isFocused={isFocused} />
+          return <SourcesList isFocused={isFocused} />
         case 'settings':
           return (
-            <SettingsScreen
+            <Settings
               isFocused={isFocused}
               isDarkMode={isDarkMode}
               onToggleDarkMode={onToggleDarkMode}

@@ -14,11 +14,11 @@ import { Source } from '../database/schema/source'
 import * as sourceService from '../services/db/source'
 import EditSource from '../components/modals/EditSource'
 
-interface SourcesListScreenProps {
+interface SourcesListProps {
   isFocused: boolean
 }
 
-export default function SourcesListScreen({ isFocused }: SourcesListScreenProps) {
+export default function SourcesList({ isFocused }: SourcesListProps) {
   const [rssSources, setRssSources] = useState<Source[]>([])
   const [subRedditSources, setSubRedditSources] = useState<Source[]>([])
   const [loading, setLoading] = useState<boolean>(false)
