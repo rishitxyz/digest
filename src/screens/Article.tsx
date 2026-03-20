@@ -8,6 +8,7 @@ import { getRelativeTime } from '../utils/date'
 import { toggleBookmarked } from '../services/db/article'
 import { Article } from '../database/schema/article'
 import * as articleService from '../services/db/article'
+import { MarkdownText } from '../components/MarkdownText'
 
 const DEFAULT_IMAGE = require('../../assets/defaults/article-default.png')
 
@@ -62,12 +63,14 @@ export default function ArticleScreen({ route, navigation }: Props) {
           resizeMode="cover"
         />
 
-        <Text
+        {/* <Text
           variant="bodyLarge"
           style={{ color: theme.colors.onSurfaceVariant, marginTop: spacing.md }}
         >
           {article.description}
-        </Text>
+        </Text> */}
+
+        <MarkdownText markdown={article.description} />
       </ScrollView>
     </View>
   )

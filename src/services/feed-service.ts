@@ -2,7 +2,7 @@ import { FeedType } from '../config/feed-source'
 import { SourceWithArticles } from '../database/schema'
 import { Article } from '../database/schema/article'
 import { Source, SourceValidationError, ValidSource } from '../database/schema/source'
-import { parseXMLFeed, parser } from '../parser/rss-parser'
+import { parseXMLFeed } from '../parser/rss-parser'
 import * as articleService from './db/article'
 
 export const quickFeedCheck = async (url: string): Promise<SourceValidationError | ValidSource> => {
@@ -52,12 +52,10 @@ export const quickFeedCheck = async (url: string): Promise<SourceValidationError
   // 4. Safe XML Parsing
   try {
     const text = await response.text()
-    const xmlObj = parser.parse(text)
+    const xmlObj = parseXMLFeed(text, 'source_id', 'source_name')
 
     // Added rdf:RDF to catch RSS 1.0 feeds
-    if (xmlObj.rss || xmlObj.feed || xmlObj['rdf:RDF']) {
-      return { isValid: true, type: FeedType.RSS, finalUrl: cleanUrl }
-    }
+    if (xmlObj.length > 0) return { isValid: true, type: FeedType.RSS, finalUrl: cleanUrl }
     return { isValid: false, error: 'Valid XML, but no RSS or Atom feed found.' }
   } catch (error) {
     console.log('Error: ', error)
@@ -69,7 +67,7 @@ export const quickFeedCheck = async (url: string): Promise<SourceValidationError
 export const fetchRSSFeed = async (source: Source): Promise<Article[]> => {
   const response = await fetch(source.url)
   const xmlString = await response.text()
-  return parseXMLFeed(xmlString, source.id)
+  return parseXMLFeed(xmlString, source.id, source.name)
 }
 
 export const fetchAll = async (sources: Source[]) => {
