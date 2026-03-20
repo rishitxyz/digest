@@ -1,16 +1,14 @@
 import React, { useState } from 'react'
-import { ScrollView, StyleSheet, View, Image } from 'react-native'
+import { ScrollView, StyleSheet, View, Image, useWindowDimensions } from 'react-native'
 import { Text, Appbar, useTheme } from 'react-native-paper'
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { RootStackParamList } from '../navigation/types'
-import { spacing, shapes } from '../theme/theme'
+import { spacing, shapes, fontSize } from '../theme/theme'
 import { getRelativeTime } from '../utils/date'
 import { toggleBookmarked } from '../services/db/article'
 import { Article } from '../database/schema/article'
 import * as articleService from '../services/db/article'
-import { MarkdownText } from '../components/MarkdownText'
-
-const DEFAULT_IMAGE = require('../../assets/defaults/article-default.png')
+import RenderHtml from 'react-native-render-html'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ArticleDetail'>
 
@@ -19,6 +17,9 @@ export default function ArticleScreen({ route, navigation }: Props) {
   const [article, setArticle] = useState<Article>(articleService.readById(id))
   const [loading, setLoading] = useState<boolean>(false)
   const theme = useTheme()
+  const { width } = useWindowDimensions()
+
+  const availableWidth = width - spacing.md * 2
 
   const handleBookmarkArticle = () => {
     if (!article) return
@@ -27,6 +28,34 @@ export default function ArticleScreen({ route, navigation }: Props) {
     console.log(updatedArticle)
     setArticle(updatedArticle)
     setLoading(false)
+  }
+
+  const renderers = {
+    img: ({ tnode }: any) => {
+      // Extract the raw image URL from the HTML tag
+      const imageUrl = tnode.attributes.src
+
+      // If there's no URL, render nothing so it doesn't crash
+      if (!imageUrl) return null
+
+      return (
+        <Image
+          source={{ uri: imageUrl }}
+          style={{
+            width: availableWidth,
+            // 3. Using a standard aspect ratio prevents layout jumping
+            // and looks incredibly clean for news feeds!
+            aspectRatio: 16 / 9,
+            borderRadius: shapes.large,
+            marginTop: spacing.sm,
+            marginBottom: spacing.sm,
+            backgroundColor: theme.colors.surfaceVariant, // Nice placeholder color while loading
+          }}
+          // 'cover' ensures the image fills the 16:9 box beautifully without stretching
+          resizeMode="cover"
+        />
+      )
+    },
   }
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
@@ -57,20 +86,41 @@ export default function ArticleScreen({ route, navigation }: Props) {
           {article.title}
         </Text>
 
-        <Image
-          source={article.imageUrl ? { uri: article.imageUrl } : DEFAULT_IMAGE}
-          style={styles.image}
-          resizeMode="cover"
+        <RenderHtml
+          source={{ html: article.description }}
+          contentWidth={spacing.md}
+          tagsStyles={{
+            body: {
+              color: theme.colors.onSurfaceVariant,
+              fontSize: 14,
+              lineHeight: 24,
+              fontFamily: theme.fonts.bodyMedium.fontFamily,
+            },
+            a: {
+              color: theme.colors.primary,
+              textDecorationLine: 'underline',
+            },
+            h1: { color: theme.colors.onSurface, fontWeight: 'bold' },
+            h2: { color: theme.colors.onSurface, fontWeight: 'bold' },
+            p: {
+              marginTop: spacing.sm,
+              marginBottom: spacing.sm,
+              fontFamily: theme.fonts.bodyMedium.fontFamily,
+            },
+            figure: {
+              margin: -10,
+              width: '100%',
+            },
+            figcaption: {
+              fontStyle: 'italic',
+              fontSize: fontSize.labelSmall,
+              color: theme.colors.onSurfaceVariant,
+              textAlign: 'center',
+              marginTop: spacing.xs,
+            },
+          }}
+          renderers={renderers} // Pass the new v6 renderer here!
         />
-
-        {/* <Text
-          variant="bodyLarge"
-          style={{ color: theme.colors.onSurfaceVariant, marginTop: spacing.md }}
-        >
-          {article.description}
-        </Text> */}
-
-        <MarkdownText markdown={article.description} />
       </ScrollView>
     </View>
   )

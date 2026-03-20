@@ -78,13 +78,13 @@ export default function FeedCard({ source, article }: FeedCardProps) {
           {article.title}
         </Text>
 
-        {article.description !== '' && (
+        {article.summary !== '' && (
           <Text
             variant="bodyMedium"
             numberOfLines={3}
             style={[styles.summary, { color: theme.colors.onSurfaceVariant }]}
           >
-            {article.description}
+            {article.summary}
           </Text>
         )}
       </Card.Content>

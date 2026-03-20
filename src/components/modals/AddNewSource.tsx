@@ -68,6 +68,8 @@ const AddNewSource = ({ visible, setVisible, onSourceAdded }: AddNewSourceProps)
     }
   }
 
+  const cleanupInput = (text: string): string => text.trim().toLowerCase()
+
   const resetStates = () => {
     setSourceType(FeedType.RSS)
     setSource('')
@@ -112,7 +114,9 @@ const AddNewSource = ({ visible, setVisible, onSourceAdded }: AddNewSourceProps)
             textContentType="name"
             label="Give it a name"
             value={source}
-            onChangeText={(text) => setSource(text.trim().toLowerCase())}
+            onChangeText={(text) =>
+              setSource(sourceType === FeedType.SUB_REDDIT ? cleanupInput(text) : text)
+            }
             left={<TextInput.Affix text={sourceType === FeedType.SUB_REDDIT ? 'r/' : ''} />}
           />
           <TextInput
