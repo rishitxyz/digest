@@ -1,4 +1,4 @@
-import React, { useState, useMemo, useCallback, useEffect } from 'react'
+import React, { useState, useCallback } from 'react'
 import { View, StyleSheet, Animated } from 'react-native'
 import { Text, Appbar, useTheme, Icon, IconButton } from 'react-native-paper'
 import type { MD3Theme } from 'react-native-paper'
@@ -11,49 +11,24 @@ import { useNavigation } from '@react-navigation/native'
 import type { NativeStackNavigationProp } from '@react-navigation/native-stack'
 import { RootStackParamList } from '../navigation/types'
 
-// Add these imports to access your Drizzle database functions
-import { getSourcesWithLatestArticles, refreshArticles } from '../services/db/source'
-
 import AddNewSource from '../components/modals/AddNewSource'
 import { Article } from '../database/schema/article'
 import { Source } from '../database/schema/source'
-import { SourceWithArticles } from '../database/schema'
 import { FeedType } from '../config/feed-source'
+import { useFeeds } from '../hooks/useFeeds'
 
 interface FeedScreenProps {
   isFocused: boolean
 }
 
 export default function FeedScreen({ isFocused }: FeedScreenProps) {
-  const theme = useTheme<MD3Theme>()
+  const styles = makeStyles(useTheme<MD3Theme>())
   const [filter, setFilter] = useState<FilterValue>('all')
-  const [feeds, setFeeds] = useState<SourceWithArticles[]>([])
+  const { sections, isSyncing, syncWithNetwork, refreshLocal } = useFeeds(filter, isFocused)
   const [addNewSource, setAddNewSource] = useState<boolean>(false)
   const { onScroll } = useScrollAnimation()
-  const [syncing, setSyncing] = useState<boolean>(false)
 
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
-
-  const loadFeeds = useCallback(async () => {
-    let fetchBookmarksOnly = false
-    switch (filter) {
-      case 'bookmarks':
-        fetchBookmarksOnly = true
-        break
-      default:
-        fetchBookmarksOnly = false
-        break
-    }
-
-    const nextFeeds = await getSourcesWithLatestArticles(fetchBookmarksOnly)
-    setFeeds(nextFeeds.filter((feed) => feed.articles.length > 0))
-  }, [filter])
-
-  useEffect(() => {
-    void loadFeeds()
-  }, [loadFeeds, isFocused])
-
-  const filteredItems = useMemo(() => feeds.filter((s) => s.showOnFeed), [feeds])
 
   const handleHeadingPress = useCallback(
     (source: Source) => {
@@ -69,60 +44,15 @@ export default function FeedScreen({ isFocused }: FeedScreenProps) {
     [],
   )
 
-  type FeedSection = {
-    title: string
-    source: Source
-    data: Article[]
-  }
-
-  const sections = useMemo<FeedSection[]>(() => {
-    return filteredItems.map((sourceWithArticles) => ({
-      title: sourceWithArticles.name,
-      source: {
-        id: sourceWithArticles.id,
-        createdAt: sourceWithArticles.createdAt,
-        name: sourceWithArticles.name,
-        url: sourceWithArticles.url,
-        type: sourceWithArticles.type,
-        showOnFeed: sourceWithArticles.showOnFeed,
-      },
-      data: sourceWithArticles.articles,
-    }))
-  }, [filteredItems])
-
-  const handleFetchLatestData = async () => {
-    setSyncing(true)
-    try {
-      await refreshArticles()
-      await loadFeeds()
-    } finally {
-      setSyncing(false)
-    }
-  }
-
   return (
-    <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
-      {/* App Bar */}
-      <Appbar.Header
-        elevated
-        style={{
-          backgroundColor: theme.colors.surface,
-        }}
-      >
-        <Appbar.Content
-          title="ReadIt"
-          style={{ alignItems: 'flex-start', marginLeft: 0 }}
-          titleStyle={{
-            fontWeight: '700',
-            fontSize: fontSize.headlineSmall,
-            color: theme.colors.onSurface,
-          }}
-        />
+    <View style={styles.container}>
+      <Appbar.Header elevated style={styles.header}>
+        <Appbar.Content title="ReadIt" style={styles.content} titleStyle={styles.contentTitle} />
         <Appbar.Action
           icon={({ size, color }) => <Icon source="progress-download" size={size} color={color} />}
-          onPress={handleFetchLatestData}
-          disabled={syncing}
-          loading={syncing}
+          onPress={syncWithNetwork}
+          disabled={isSyncing}
+          loading={isSyncing}
         />
         <Appbar.Action
           icon="plus"
@@ -137,23 +67,13 @@ export default function FeedScreen({ isFocused }: FeedScreenProps) {
         keyExtractor={(item, index) => item.id + index}
         renderItem={renderItem}
         ListHeaderComponent={
-          <View style={{ marginBottom: spacing.sm, paddingTop: spacing.sm }}>
+          <View style={styles.listHeader}>
             <FeedFilter value={filter} onChange={setFilter} />
           </View>
         }
         renderSectionHeader={({ section: { title, source } }) => (
-          <View
-            style={{
-              flex: 1,
-              flexDirection: 'row',
-              justifyContent: 'space-between',
-              alignItems: 'center',
-              paddingHorizontal: spacing.md,
-              paddingVertical: spacing.sm,
-              backgroundColor: theme.colors.background,
-            }}
-          >
-            <Text variant="titleLarge" style={{ color: theme.colors.primary, fontWeight: 'bold' }}>
+          <View style={styles.sectionHeader}>
+            <Text variant="titleLarge" style={styles.sectionTitle}>
               {source.type === FeedType.SUB_REDDIT ? source.url : title}
             </Text>
             <IconButton
@@ -171,20 +91,10 @@ export default function FeedScreen({ isFocused }: FeedScreenProps) {
         // ── Empty State ──
         ListEmptyComponent={
           <View style={styles.emptyContainer}>
-            <Text
-              variant="headlineSmall"
-              style={{ color: theme.colors.onSurfaceVariant, textAlign: 'center' }}
-            >
+            <Text variant="headlineSmall" style={styles.emptyTitle}>
               No articles found
             </Text>
-            <Text
-              variant="bodyMedium"
-              style={{
-                color: theme.colors.onSurfaceVariant,
-                textAlign: 'center',
-                marginTop: spacing.sm,
-              }}
-            >
+            <Text variant="bodyMedium" style={styles.bookmarksEmptyTitle}>
               {filter === 'bookmarks'
                 ? 'No bookmark articles yet.'
                 : 'Add new feeds by clicking on the plus button'}
@@ -192,25 +102,55 @@ export default function FeedScreen({ isFocused }: FeedScreenProps) {
           </View>
         }
       />
-
-      {/* Pass the loadFeeds function as a prop so the modal can trigger a refresh! */}
-      <AddNewSource visible={addNewSource} setVisible={setAddNewSource} onSourceAdded={loadFeeds} />
+      <AddNewSource
+        visible={addNewSource}
+        setVisible={setAddNewSource}
+        onSourceAdded={refreshLocal}
+      />
     </View>
   )
 }
 
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  listContent: {
-    paddingHorizontal: spacing.md,
-  },
-  emptyContainer: {
-    flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    paddingTop: 120,
-    paddingHorizontal: spacing.xl,
-  },
-})
+const makeStyles = (theme: MD3Theme) =>
+  StyleSheet.create({
+    container: {
+      flex: 1,
+      backgroundColor: theme.colors.background,
+    },
+    header: {
+      backgroundColor: theme.colors.surface,
+    },
+    content: { alignItems: 'flex-start', marginLeft: 0 },
+    contentTitle: {
+      fontWeight: '700',
+      fontSize: fontSize.headlineSmall,
+      color: theme.colors.onSurface,
+    },
+    listHeader: { marginBottom: spacing.sm, paddingTop: spacing.sm },
+    listContent: {
+      paddingHorizontal: spacing.md,
+    },
+    sectionHeader: {
+      flex: 1,
+      flexDirection: 'row',
+      justifyContent: 'space-between',
+      alignItems: 'center',
+      paddingHorizontal: spacing.md,
+      paddingVertical: spacing.sm,
+      backgroundColor: theme.colors.background,
+    },
+    sectionTitle: { color: theme.colors.primary, fontWeight: 'bold' },
+    emptyContainer: {
+      flex: 1,
+      justifyContent: 'center',
+      alignItems: 'center',
+      paddingTop: 120,
+      paddingHorizontal: spacing.xl,
+    },
+    emptyTitle: { color: theme.colors.onSurfaceVariant, textAlign: 'center' },
+    bookmarksEmptyTitle: {
+      color: theme.colors.onSurfaceVariant,
+      textAlign: 'center',
+      marginTop: spacing.sm,
+    },
+  })
