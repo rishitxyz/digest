@@ -8,7 +8,7 @@ import { RootStackParamList } from '../navigation/types'
 import { fetchComments } from '../parser/reddit-json'
 import * as articleService from '../services/db/article'
 import { Article } from '../database/schema/article'
-import { MarkdownText } from '../components/markdown-text'
+import { MarkdownText } from '../components/MarkdownText'
 interface Comment {
   author: string
   body: string

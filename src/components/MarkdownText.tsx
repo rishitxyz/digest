@@ -3,7 +3,7 @@ import { useTheme } from 'react-native-paper'
 
 interface MarkdownTextProps {
   markdown: string
-  markdownStyle: MarkdownStyle
+  markdownStyle?: MarkdownStyle
 }
 
 export const MarkdownText = ({ markdown, markdownStyle = {} }: MarkdownTextProps) => {
@@ -26,8 +26,8 @@ export const MarkdownText = ({ markdown, markdownStyle = {} }: MarkdownTextProps
       underline: true,
     },
     strong: {
-      fontFamily: theme.fonts.titleMedium.fontFamily, // Assuming this is your semi-bold/bold variant
-      fontWeight: 'bold', // Sometimes the package still needs this as a hint
+      fontFamily: theme.fonts.titleMedium.fontFamily,
+      fontWeight: 'bold',
       color: theme.colors.onSurface,
     },
   }
