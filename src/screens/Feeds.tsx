@@ -12,6 +12,7 @@ import { Source } from '../database/schema/source'
 import { useFeeds } from '../hooks/useFeeds'
 import { SectionHeader } from '../components/FeedScreen/SectionHeader'
 import { EmptyState } from '../components/FeedScreen/EmptyState'
+import { Snackbar } from '../components/Snackbar'
 
 interface FeedScreenProps {
   isFocused: boolean
@@ -73,6 +74,7 @@ export default function FeedScreen({ isFocused }: FeedScreenProps) {
         setVisible={setAddNewSource}
         onSourceAdded={refreshLocal}
       />
+      <Snackbar text="Added new source." />
     </View>
   )
 }

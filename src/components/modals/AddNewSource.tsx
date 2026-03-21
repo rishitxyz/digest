@@ -1,7 +1,8 @@
 import * as React from 'react'
-import { View } from 'react-native'
+import { View, StyleSheet } from 'react-native'
 import {
   Button,
+  Text,
   MD3Theme,
   Modal,
   Portal,
@@ -24,49 +25,10 @@ interface AddNewSourceProps {
 
 const AddNewSource = ({ visible, setVisible, onSourceAdded }: AddNewSourceProps) => {
   const [sourceType, setSourceType] = React.useState<FeedType>(FeedType.RSS)
-  const [source, setSource] = React.useState<string>()
-  const [sourceUrl, setSourceUrl] = React.useState<string>()
+  const [source, setSource] = React.useState<string>('')
+  const [sourceUrl, setSourceUrl] = React.useState<string>('')
   const [loading, setLoading] = React.useState<boolean>(false)
   const theme = useTheme<MD3Theme>()
-
-  const addNewSource = async () => {
-    if (source === undefined || source === null || source === '' || sourceUrl === undefined)
-      throw new Error('Invalid source name.')
-    setLoading(true)
-
-    try {
-      let finalType = sourceType
-      let finalUrl = sourceUrl
-
-      if (sourceType === FeedType.RSS && sourceUrl) {
-        const validation = await quickFeedCheck(sourceUrl)
-
-        if (!validation.isValid) {
-          throw new Error(validation.error)
-        }
-
-        finalType = validation.type
-        finalUrl = validation.finalUrl
-      }
-
-      const newSource = sourceService.insertNew({
-        id: source.trim().toLowerCase(),
-        name: sourceType === FeedType.SUB_REDDIT ? `r/${source}` : source,
-        type: finalType,
-        url: sourceType === FeedType.SUB_REDDIT ? `r/${finalUrl!}` : finalUrl!,
-      })
-      if (finalType === FeedType.RSS) articleService.save(await fetchRSSFeed(newSource))
-      else articleService.save(await redditService.fetchPosts(newSource))
-    } catch (error) {
-      console.log(error)
-      throw new Error('Failed to add new source.')
-    } finally {
-      setLoading(false)
-      setVisible(false)
-      resetStates()
-      onSourceAdded()
-    }
-  }
 
   const cleanupInput = (text: string): string => text.trim().toLowerCase()
 
@@ -77,18 +39,68 @@ const AddNewSource = ({ visible, setVisible, onSourceAdded }: AddNewSourceProps)
     setLoading(false)
   }
 
+  const handleDismiss = () => {
+    setVisible(false)
+    resetStates()
+  }
+
+  const addNewSource = async () => {
+    if (!source || !sourceUrl) return // Don't throw an error, just return early
+
+    setLoading(true)
+
+    try {
+      let finalType = sourceType
+      let finalUrl = sourceUrl
+
+      if (sourceType === FeedType.RSS) {
+        const validation = await quickFeedCheck(sourceUrl)
+        if (!validation.isValid) {
+          throw new Error(validation.error)
+        }
+        finalType = validation.type
+        finalUrl = validation.finalUrl
+      }
+
+      const newSource = sourceService.insertNew({
+        id: cleanupInput(source),
+        name: sourceType === FeedType.SUB_REDDIT ? `r/${source}` : source,
+        type: finalType,
+        url: sourceType === FeedType.SUB_REDDIT ? `r/${finalUrl}` : finalUrl,
+      })
+
+      if (finalType === FeedType.RSS) {
+        articleService.save(await fetchRSSFeed(newSource))
+      } else {
+        articleService.save(await redditService.fetchPosts(newSource))
+      }
+
+      onSourceAdded() // Call success callback
+      handleDismiss() // Close and reset
+    } catch (error) {
+      console.log(error)
+      // You should show a Snackbar here instead of throwing an error!
+    } finally {
+      setLoading(false)
+    }
+  }
+
+  // Generate dynamic styles based on the theme
+  const styles = React.useMemo(() => makeStyles(theme), [theme])
+
   return (
     <Portal>
       <Modal
         visible={visible}
-        onDismiss={() => setVisible(false)}
-        contentContainerStyle={{
-          backgroundColor: theme.colors.background,
-          padding: 20,
-          borderRadius: shapes.extraLarge,
-        }}
+        onDismiss={handleDismiss}
+        contentContainerStyle={styles.modalContainer}
+        style={styles.modalOverlay}
       >
-        <View style={{ gap: 15 }}>
+        <Text variant="headlineSmall" style={styles.title}>
+          Add new source
+        </Text>
+
+        <View style={styles.formContainer}>
           <SegmentedButtons
             value={sourceType}
             onValueChange={(val) => setSourceType(val as FeedType)}
@@ -97,18 +109,16 @@ const AddNewSource = ({ visible, setVisible, onSourceAdded }: AddNewSourceProps)
                 value: FeedType.RSS,
                 label: 'RSS',
                 icon: 'rss',
-                checkedColor: theme.colors.onPrimaryContainer,
-                uncheckedColor: theme.colors.onSurfaceVariant,
               },
               {
                 value: FeedType.SUB_REDDIT,
                 label: 'Subreddit',
                 icon: 'reddit',
-                checkedColor: theme.colors.onPrimaryContainer,
-                uncheckedColor: theme.colors.onSurfaceVariant,
               },
             ]}
+            style={styles.segmentedButtons}
           />
+
           <TextInput
             mode="outlined"
             textContentType="name"
@@ -117,26 +127,31 @@ const AddNewSource = ({ visible, setVisible, onSourceAdded }: AddNewSourceProps)
             onChangeText={(text) =>
               setSource(sourceType === FeedType.SUB_REDDIT ? cleanupInput(text) : text)
             }
-            left={<TextInput.Affix text={sourceType === FeedType.SUB_REDDIT ? 'r/' : ''} />}
+            left={sourceType === FeedType.SUB_REDDIT ? <TextInput.Affix text="r/" /> : null}
+            style={styles.input}
           />
+
           <TextInput
             mode="outlined"
             textContentType="URL"
             label={sourceType === FeedType.RSS ? 'Feed URL' : 'Subreddit name'}
             value={sourceUrl}
-            onChangeText={(text) => {
-              setSourceUrl(text.trim().toLowerCase())
-            }}
-            left={<TextInput.Affix text={sourceType === FeedType.SUB_REDDIT ? 'r/' : ''} />}
+            onChangeText={(text) => setSourceUrl(cleanupInput(text))}
+            left={sourceType === FeedType.SUB_REDDIT ? <TextInput.Affix text="r/" /> : null}
+            style={styles.input}
           />
         </View>
-        <View style={{ flexDirection: 'row', justifyContent: 'flex-end', paddingTop: spacing.lg }}>
-          <Button onTouchEnd={() => setVisible(false)}>Cancel</Button>
+
+        <View style={styles.actionContainer}>
+          <Button onPress={handleDismiss} textColor={theme.colors.primary}>
+            Cancel
+          </Button>
           <Button
             mode="contained"
-            onTouchEnd={addNewSource}
-            disabled={source === undefined || source === null || source === ''}
+            onPress={addNewSource}
+            disabled={!source || !sourceUrl || loading}
             loading={loading}
+            style={styles.addButton}
           >
             Add
           </Button>
@@ -145,5 +160,41 @@ const AddNewSource = ({ visible, setVisible, onSourceAdded }: AddNewSourceProps)
     </Portal>
   )
 }
+
+// Extract styles to keep JSX clean
+const makeStyles = (theme: MD3Theme) =>
+  StyleSheet.create({
+    modalOverlay: {
+      paddingHorizontal: spacing.lg, // Prevents modal from touching screen edges
+    },
+    modalContainer: {
+      backgroundColor: theme.colors.surface,
+      padding: spacing.xl,
+      borderRadius: shapes.extraLarge,
+    },
+    title: {
+      fontWeight: 'bold',
+      color: theme.colors.onSurface,
+      marginBottom: spacing.lg,
+    },
+    formContainer: {
+      // Replaced 'gap' with standard margin-bottom on children for better RN support
+    },
+    segmentedButtons: {
+      marginBottom: spacing.md,
+    },
+    input: {
+      marginBottom: spacing.md,
+      backgroundColor: theme.colors.surface, // Ensures background matches modal
+    },
+    actionContainer: {
+      flexDirection: 'row',
+      justifyContent: 'flex-end',
+      marginTop: spacing.sm,
+    },
+    addButton: {
+      marginLeft: spacing.sm,
+    },
+  })
 
 export default AddNewSource

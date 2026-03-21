@@ -19,13 +19,12 @@ export default function ArticleScreen({ route, navigation }: Props) {
   const theme = useTheme()
   const { width } = useWindowDimensions()
 
-  const availableWidth = width - spacing.md * 2
+  const availableWidth = width - spacing.lg * 2
 
   const handleBookmarkArticle = () => {
     if (!article) return
     setLoading(true)
     const updatedArticle = toggleBookmarked(article.id, !article.bookmarked)
-    console.log(updatedArticle)
     setArticle(updatedArticle)
     setLoading(false)
   }
@@ -86,41 +85,42 @@ export default function ArticleScreen({ route, navigation }: Props) {
           {article.title}
         </Text>
 
-        <RenderHtml
-          source={{ html: article.description }}
-          contentWidth={spacing.md}
-          tagsStyles={{
-            body: {
-              color: theme.colors.onSurfaceVariant,
-              fontSize: 14,
-              lineHeight: 24,
-              fontFamily: theme.fonts.bodyMedium.fontFamily,
-            },
-            a: {
-              color: theme.colors.primary,
-              textDecorationLine: 'underline',
-            },
-            h1: { color: theme.colors.onSurface, fontWeight: 'bold' },
-            h2: { color: theme.colors.onSurface, fontWeight: 'bold' },
-            p: {
-              marginTop: spacing.sm,
-              marginBottom: spacing.sm,
-              fontFamily: theme.fonts.bodyMedium.fontFamily,
-            },
-            figure: {
-              margin: -10,
-              width: '100%',
-            },
-            figcaption: {
-              fontStyle: 'italic',
-              fontSize: fontSize.labelSmall,
-              color: theme.colors.onSurfaceVariant,
-              textAlign: 'center',
-              marginTop: spacing.xs,
-            },
-          }}
-          renderers={renderers} // Pass the new v6 renderer here!
-        />
+        <View>
+          <RenderHtml
+            source={{ html: article.description }}
+            contentWidth={spacing.md}
+            tagsStyles={{
+              body: {
+                color: theme.colors.onSurfaceVariant,
+                fontSize: 14,
+                lineHeight: 24,
+                fontFamily: theme.fonts.bodyMedium.fontFamily,
+              },
+              a: {
+                color: theme.colors.primary,
+                textDecorationLine: 'underline',
+              },
+              h1: { color: theme.colors.onSurface, fontWeight: 'bold' },
+              h2: { color: theme.colors.onSurface, fontWeight: 'bold' },
+              p: {
+                marginTop: spacing.sm,
+                marginBottom: spacing.sm,
+                fontFamily: theme.fonts.bodyMedium.fontFamily,
+              },
+              figure: {
+                width: '100%',
+              },
+              figcaption: {
+                fontStyle: 'italic',
+                fontSize: fontSize.labelSmall,
+                color: theme.colors.onSurfaceVariant,
+                textAlign: 'center',
+                marginTop: spacing.xs,
+              },
+            }}
+            renderers={renderers} // Pass the new v6 renderer here!
+          />
+        </View>
       </ScrollView>
     </View>
   )
@@ -129,6 +129,9 @@ export default function ArticleScreen({ route, navigation }: Props) {
 const styles = StyleSheet.create({
   container: { flex: 1 },
   content: { padding: spacing.lg },
+  htmlContent: {
+    marginVertical: spacing.lg,
+  },
   image: {
     width: '100%',
     height: 200,
