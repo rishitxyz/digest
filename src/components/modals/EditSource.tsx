@@ -1,7 +1,7 @@
 import * as React from 'react'
 import { View } from 'react-native'
 import { Source } from '../../database/schema/source'
-import { MD3Theme, Portal, Modal, useTheme, TextInput, Button } from 'react-native-paper'
+import { MD3Theme, Portal, Modal, useTheme, TextInput, Button, Checkbox } from 'react-native-paper'
 import { shapes, spacing } from '../../theme/theme'
 import * as sourceService from '../../services/db/source'
 
@@ -14,6 +14,7 @@ interface EditSourceProps {
 const EditSource = ({ source, visible, setVisible }: EditSourceProps) => {
   const [url, setUrl] = React.useState<string>(source.url)
   const [name, setName] = React.useState<string>(source.name)
+  const [showOnFeed, setShowOnFeed] = React.useState<boolean>(source.showOnFeed)
   const [loading, setLoading] = React.useState<boolean>(false)
   const theme = useTheme<MD3Theme>()
 
@@ -23,7 +24,7 @@ const EditSource = ({ source, visible, setVisible }: EditSourceProps) => {
 
   const handleUpdateSource = () => {
     setLoading(true)
-    sourceService.updateById(source.id, { ...source, name, url })
+    sourceService.updateById(source.id, { ...source, name, url, showOnFeed })
     setLoading(false)
   }
 
@@ -32,6 +33,10 @@ const EditSource = ({ source, visible, setVisible }: EditSourceProps) => {
     sourceService.deleteById(source.id)
     setLoading(false)
     setVisible(false)
+  }
+
+  const handleShowOnFeedChange = () => {
+    setShowOnFeed(!showOnFeed)
   }
 
   return (
@@ -46,7 +51,7 @@ const EditSource = ({ source, visible, setVisible }: EditSourceProps) => {
           marginHorizontal: spacing.xl, // Added margin so it doesn't touch screen edges
         }}
       >
-        <View style={{ gap: 60 }}>
+        <View style={{ gap: 30 }}>
           <View style={{ gap: 10 }}>
             <TextInput
               mode="outlined"
@@ -62,6 +67,11 @@ const EditSource = ({ source, visible, setVisible }: EditSourceProps) => {
               label="URL"
               value={url}
               onChangeText={(text) => setUrl(text.trim())}
+            />
+            <Checkbox.Item
+              label="Show on feed"
+              status={showOnFeed ? 'checked' : 'unchecked'}
+              onPress={handleShowOnFeedChange}
             />
           </View>
 
@@ -92,7 +102,9 @@ const EditSource = ({ source, visible, setVisible }: EditSourceProps) => {
               <Button
                 textColor={theme.colors.primary}
                 onTouchEnd={handleUpdateSource}
-                disabled={name === source.name && url === source.url}
+                disabled={
+                  name === source.name && url === source.url && source.showOnFeed === showOnFeed
+                }
                 loading={loading}
               >
                 Update

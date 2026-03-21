@@ -10,6 +10,17 @@ export const updateById = (id: string, source: Source): Source => {
   return db.update(SourceTable).set(source).returning().get()
 }
 
+export const toggleShowOnFeed = (id: string, showOnFeed: boolean) => {
+  db.update(SourceTable)
+    .set({
+      showOnFeed,
+    })
+    .where(eq(SourceTable.id, id))
+    .run()
+
+  return readById(id)
+}
+
 export const getAllSources = (): { subReddits: Source[]; rss: Source[] } => {
   return {
     subReddits: db
