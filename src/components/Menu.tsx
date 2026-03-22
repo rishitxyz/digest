@@ -5,10 +5,16 @@ interface MenuActionProps {
   anchor: React.ReactNode
   visible: boolean
   setVisible: React.Dispatch<React.SetStateAction<boolean>>
-  menuOptions: { title: string; onPress: () => void; icon?: string }[]
+  menuOptions: { title: string; onPress: () => void; icon?: string; disabled: boolean }[]
 }
 
-export const MenuAction = ({ anchor, visible, setVisible, menuOptions }: MenuActionProps) => {
+export const MenuAction = ({
+  anchor,
+  visible,
+  setVisible,
+  menuOptions,
+  disabled,
+}: MenuActionProps) => {
   const theme = useTheme()
 
   const closeMenu = () => setVisible(false)
@@ -33,6 +39,7 @@ export const MenuAction = ({ anchor, visible, setVisible, menuOptions }: MenuAct
           }}
           leadingIcon={icon}
           titleStyle={{ color: theme.colors.onSurface, fontSize: fontSize.bodyMedium }}
+          disabled={disabled}
         />
       ))}
     </Menu>

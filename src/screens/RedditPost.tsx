@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react'
 import { ScrollView, StyleSheet, View } from 'react-native'
 import { Text, Appbar, List, Divider, Icon, useTheme, ActivityIndicator } from 'react-native-paper'
+import * as WebBrowser from 'expo-web-browser'
 import { spacing, shapes, fontSize } from '../theme/theme'
 import { getRelativeTime } from '../utils/date'
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
@@ -92,21 +93,29 @@ export default function RedditPost({ route, navigation }: Props) {
   type ViewMode = 'reader' | 'link' | 'original'
   const [viewMode, setViewMode] = useState<ViewMode>(post.hasEmbeddedHtml ? 'link' : 'reader')
 
-  const viewModeOptions: { key: ViewMode; title: string; onPress: () => void }[] = [
+  const viewModeOptions: {
+    key: ViewMode
+    title: string
+    onPress: () => void
+    disabled: boolean
+  }[] = [
     {
       key: 'reader',
       title: 'Reader',
       onPress: () => setViewMode('reader'),
+      disabled: viewMode === 'reader',
     },
     {
       key: 'original',
       title: 'Open in browser',
-      onPress: () => setViewMode('reader'),
+      onPress: () => handleOpenArticle(`https://www.reddit.com${post.link!}`),
+      disabled: viewMode === 'original',
     },
     {
       key: 'link',
       title: 'WebView',
       onPress: () => setViewMode('link'),
+      disabled: viewMode === 'link',
     },
   ]
 
@@ -141,6 +150,22 @@ export default function RedditPost({ route, navigation }: Props) {
       ...post,
       bookmarked: !post.bookmarked,
     })
+  }
+
+  const handleOpenArticle = async (link: string) => {
+    if (!post.link) return
+
+    try {
+      await WebBrowser.openBrowserAsync(link, {
+        toolbarColor: theme.colors.surface,
+        controlsColor: theme.colors.primary,
+
+        // Optional iOS presentation style (MODAL makes it slide up nicely)
+        presentationStyle: WebBrowser.WebBrowserPresentationStyle.PAGE_SHEET,
+      })
+    } catch (error) {
+      console.error("Couldn't open browser:", error)
+    }
   }
 
   return (
