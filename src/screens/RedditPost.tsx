@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native'
+import { ScrollView, StyleSheet, View } from 'react-native'
 import { Text, Appbar, List, Divider, Icon, useTheme, ActivityIndicator } from 'react-native-paper'
 import { spacing, shapes, fontSize } from '../theme/theme'
 import { getRelativeTime } from '../utils/date'
@@ -9,7 +9,8 @@ import { fetchComments } from '../parser/reddit-json'
 import * as articleService from '../services/db/article'
 import { Article } from '../database/schema/article'
 import { MarkdownText } from '../components/MarkdownText'
-import { HtmlRenderer } from '../components/HtmlRenderer'
+import { WebViewPage } from '../components/WebViewPage'
+import { MenuAction } from '../components/Menu'
 interface Comment {
   author: string
   body: string
@@ -85,8 +86,29 @@ export default function RedditPost({ route, navigation }: Props) {
   const [post, setPost] = useState<Article>(articleService.readById(id))
   const [comments, setComments] = useState<Comment[]>([])
   const [commentsLoading, setCommentsLoading] = useState<boolean>(Boolean(post.link))
+  const [openMenu, setOpenMenu] = useState<boolean>(false)
   const theme = useTheme()
-  const { width } = useWindowDimensions()
+
+  type ViewMode = 'reader' | 'link' | 'original'
+  const [viewMode, setViewMode] = useState<ViewMode>(post.hasEmbeddedHtml ? 'link' : 'reader')
+
+  const viewModeOptions: { key: ViewMode; title: string; onPress: () => void }[] = [
+    {
+      key: 'reader',
+      title: 'Reader',
+      onPress: () => setViewMode('reader'),
+    },
+    {
+      key: 'original',
+      title: 'Open in browser',
+      onPress: () => setViewMode('reader'),
+    },
+    {
+      key: 'link',
+      title: 'WebView',
+      onPress: () => setViewMode('link'),
+    },
+  ]
 
   useEffect(() => {
     let ignore = false
@@ -130,75 +152,84 @@ export default function RedditPost({ route, navigation }: Props) {
           icon={post.bookmarked ? 'bookmark-check' : 'bookmark-plus-outline'}
           onPress={handleBookmark}
         />
+        <MenuAction
+          visible={openMenu}
+          setVisible={setOpenMenu}
+          anchor={<Appbar.Action icon="dots-vertical" onTouchEnd={() => setOpenMenu(!openMenu)} />}
+          menuOptions={viewModeOptions}
+        />
       </Appbar.Header>
 
-      <ScrollView contentContainerStyle={styles.content}>
-        <View style={styles.author}>
-          <Text variant="labelSmall" style={{ color: theme.colors.primary }}>
-            {post.author}
-          </Text>
-          <Text variant="labelSmall">{getRelativeTime(post.publishedAt)}</Text>
-        </View>
-        <Text
-          variant="headlineSmall"
-          style={{ color: theme.colors.onSurface, marginBottom: spacing.md }}
-        >
-          {post.title}
-        </Text>
-        <View>
-          {post.hasEmbeddedHtml ? (
-            <HtmlRenderer html={post.description} currentWidth={width} />
-          ) : (
-            <MarkdownText markdown={post.description} />
-          )}
-        </View>
-
-        <Divider
-          style={{
-            backgroundColor: theme.colors.outlineVariant,
-            marginTop: spacing.md,
-            height: 2,
-          }}
+      {['link', 'original'].includes(viewMode) ? (
+        <WebViewPage
+          link={viewMode === 'link' ? post.description : post.link!}
+          style={{ flex: 1 }}
         />
-
-        <View>
+      ) : (
+        <ScrollView contentContainerStyle={styles.content}>
+          <View style={styles.author}>
+            <Text variant="labelSmall" style={{ color: theme.colors.primary }}>
+              {post.author}
+            </Text>
+            <Text variant="labelSmall">{getRelativeTime(post.publishedAt)}</Text>
+          </View>
           <Text
-            style={{ marginVertical: spacing.md, color: theme.colors.primary, fontWeight: '600' }}
+            variant="headlineSmall"
+            style={{ color: theme.colors.onSurface, marginBottom: spacing.md }}
           >
-            Comments
+            {post.title}
           </Text>
-          <List.Section>
-            {commentsLoading ? (
-              <ActivityIndicator
-                animating
-                style={{ marginTop: spacing.sm }}
-                color={theme.colors.primary}
-              />
-            ) : comments.length === 0 ? (
-              <Text
-                variant="bodyMedium"
-                style={{ textAlign: 'center', color: theme.colors.onSurfaceVariant }}
-              >
-                No comments yet.
-              </Text>
-            ) : (
-              comments.map((comment, idx) => (
-                <React.Fragment key={idx}>
-                  {/* 1. Pass the top-level comments to our new component */}
-                  <CommentThread comment={comment} />
+          <View>
+            <MarkdownText markdown={post.description} />
+          </View>
 
-                  {/* 2. Keep the divider for top-level comments only */}
-                  {idx !== comments.length - 1 && (
-                    <Divider
-                      style={{ backgroundColor: theme.colors.outlineVariant, marginVertical: 4 }}
-                    />
-                  )}
-                </React.Fragment>
-              ))
-            )}
-          </List.Section>
-        </View>
-      </ScrollView>
+          <Divider
+            style={{
+              backgroundColor: theme.colors.outlineVariant,
+              marginTop: spacing.md,
+              height: 2,
+            }}
+          />
+
+          <View>
+            <Text
+              style={{ marginVertical: spacing.md, color: theme.colors.primary, fontWeight: '600' }}
+            >
+              Comments
+            </Text>
+            <List.Section>
+              {commentsLoading ? (
+                <ActivityIndicator
+                  animating
+                  style={{ marginTop: spacing.sm }}
+                  color={theme.colors.primary}
+                />
+              ) : comments.length === 0 ? (
+                <Text
+                  variant="bodyMedium"
+                  style={{ textAlign: 'center', color: theme.colors.onSurfaceVariant }}
+                >
+                  No comments yet.
+                </Text>
+              ) : (
+                comments.map((comment, idx) => (
+                  <React.Fragment key={idx}>
+                    {/* 1. Pass the top-level comments to our new component */}
+                    <CommentThread comment={comment} />
+
+                    {/* 2. Keep the divider for top-level comments only */}
+                    {idx !== comments.length - 1 && (
+                      <Divider
+                        style={{ backgroundColor: theme.colors.outlineVariant, marginVertical: 4 }}
+                      />
+                    )}
+                  </React.Fragment>
+                ))
+              )}
+            </List.Section>
+          </View>
+        </ScrollView>
+      )}
     </View>
   )
 }

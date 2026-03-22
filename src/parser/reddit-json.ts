@@ -1,6 +1,7 @@
 import { Article } from '../database/schema/article'
 import { Source } from '../database/schema/source'
 import * as articleService from '../services/db/article'
+import { convertToStandardYouTubeLink } from '../utils/youtube-link'
 
 export const fetchAllSubReddits = async (sources: Source[]) => {
   await Promise.all(
@@ -35,6 +36,8 @@ export const fetchPosts = async (
     let hasEmbeddedHtml: boolean = false
     if ((!content || content === '') && child.data.secure_media_embed.content) {
       content = extractEmbedUrl(child.data.secure_media_embed.content) ?? ''
+      if (content && content.includes('youtube.com/embed/'))
+        content = convertToStandardYouTubeLink(content)
       hasEmbeddedHtml = true
     }
     return {

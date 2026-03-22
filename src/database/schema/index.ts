@@ -30,8 +30,6 @@ export const db = drizzle(expoDb, { schema })
 
 export function initializeDatabase() {
   expoDb.execSync(`
-    DROP TABLE source;
-    DROP TABLE article;
     CREATE TABLE IF NOT EXISTS source (
       id TEXT PRIMARY KEY,
       name TEXT NOT NULL UNIQUE, -- Added UNIQUE
