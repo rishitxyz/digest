@@ -37,7 +37,6 @@ export default function FeedCard({ source, article }: FeedCardProps) {
       style={[
         styles.card,
         {
-          // backgroundColor: theme.colors.surface,
           borderRadius: shapes.extraLarge,
         },
       ]}

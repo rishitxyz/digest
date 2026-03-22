@@ -13,6 +13,7 @@ export const ArticleTable = sqliteTable('article', {
   link: text('link'),
   imageUrl: text('imageUrl'),
   publishedAt: text('publishedAt').notNull(),
+  hasEmbeddedHtml: integer('hasEmbeddedHtml', { mode: 'boolean' }).notNull(),
   isRead: integer('isRead', { mode: 'boolean' }).default(false).notNull(),
   bookmarked: integer('bookmarked', { mode: 'boolean' }).default(false).notNull(),
 })

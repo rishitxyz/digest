@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react'
-import { ScrollView, StyleSheet, View } from 'react-native'
+import { ScrollView, StyleSheet, useWindowDimensions, View } from 'react-native'
 import { Text, Appbar, List, Divider, Icon, useTheme, ActivityIndicator } from 'react-native-paper'
 import { spacing, shapes, fontSize } from '../theme/theme'
 import { getRelativeTime } from '../utils/date'
@@ -9,6 +9,7 @@ import { fetchComments } from '../parser/reddit-json'
 import * as articleService from '../services/db/article'
 import { Article } from '../database/schema/article'
 import { MarkdownText } from '../components/MarkdownText'
+import { HtmlRenderer } from '../components/HtmlRenderer'
 interface Comment {
   author: string
   body: string
@@ -85,6 +86,7 @@ export default function RedditPost({ route, navigation }: Props) {
   const [comments, setComments] = useState<Comment[]>([])
   const [commentsLoading, setCommentsLoading] = useState<boolean>(Boolean(post.link))
   const theme = useTheme()
+  const { width } = useWindowDimensions()
 
   useEffect(() => {
     let ignore = false
@@ -144,7 +146,11 @@ export default function RedditPost({ route, navigation }: Props) {
           {post.title}
         </Text>
         <View>
-          <MarkdownText markdown={post.description} />
+          {post.hasEmbeddedHtml ? (
+            <HtmlRenderer html={post.description} currentWidth={width} />
+          ) : (
+            <MarkdownText markdown={post.description} />
+          )}
         </View>
 
         <Divider

@@ -11,6 +11,18 @@ export const fetchAllSubReddits = async (sources: Source[]) => {
   )
 }
 
+const extractEmbedUrl = (htmlText: string | undefined): string | null => {
+  if (!htmlText) return null
+
+  // Unescape the quotes just in case Reddit sent them as &quot;
+  const decodedHtml = htmlText.replace(/&quot;/g, '"')
+
+  // This Regex looks for src="<anything>" and captures the <anything> part
+  const match = decodedHtml.match(/src="([^"]+)"/)
+
+  return match ? match[1] : null
+}
+
 export const fetchPosts = async (
   source: Source,
   type: 'hot' | 'new' | 'top' = 'hot',
@@ -18,17 +30,24 @@ export const fetchPosts = async (
   const response = await fetch(`https://www.reddit.com/${source.url}/${type}.json`)
   const json = await response.json()
 
-  const s = json.data.children.map((child: any) => ({
-    id: child.data.id,
-    title: child.data.title,
-    author: `u/${child.data.author}`, // Reddit provides this correctly
-    description: child.data.selftext,
-    link: child.data.permalink,
-    sourceId: source.id,
-    publishedAt: new Date(child.data.created_utc * 1000).toISOString(),
-  }))
-  console.log(s)
-  return s
+  return json.data.children.map((child: any) => {
+    let content: string = child.data.selftext
+    let hasEmbeddedHtml: boolean = false
+    if ((!content || content === '') && child.data.secure_media_embed.content) {
+      content = extractEmbedUrl(child.data.secure_media_embed.content) ?? ''
+      hasEmbeddedHtml = true
+    }
+    return {
+      id: child.data.id,
+      title: child.data.title,
+      author: `u/${child.data.author}`, // Reddit provides this correctly
+      description: content,
+      link: child.data.permalink,
+      sourceId: source.id,
+      hasEmbeddedHtml,
+      publishedAt: new Date(child.data.created_utc * 1000).toISOString(),
+    }
+  })
 }
 
 // Example permalink: /r/androidapps/comments/1abcde/some_post_title/

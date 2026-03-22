@@ -9,6 +9,7 @@ import { toggleBookmarked } from '../services/db/article'
 import { Article } from '../database/schema/article'
 import * as articleService from '../services/db/article'
 import RenderHtml from 'react-native-render-html'
+import { HtmlRenderer } from '../components/HtmlRenderer'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ArticleDetail'>
 
@@ -19,8 +20,6 @@ export default function ArticleScreen({ route, navigation }: Props) {
   const theme = useTheme()
   const { width } = useWindowDimensions()
 
-  const availableWidth = width - spacing.lg * 2
-
   const handleBookmarkArticle = () => {
     if (!article) return
     setLoading(true)
@@ -29,33 +28,6 @@ export default function ArticleScreen({ route, navigation }: Props) {
     setLoading(false)
   }
 
-  const renderers = {
-    img: ({ tnode }: any) => {
-      // Extract the raw image URL from the HTML tag
-      const imageUrl = tnode.attributes.src
-
-      // If there's no URL, render nothing so it doesn't crash
-      if (!imageUrl) return null
-
-      return (
-        <Image
-          source={{ uri: imageUrl }}
-          style={{
-            width: availableWidth,
-            // 3. Using a standard aspect ratio prevents layout jumping
-            // and looks incredibly clean for news feeds!
-            aspectRatio: 16 / 9,
-            borderRadius: shapes.large,
-            marginTop: spacing.sm,
-            marginBottom: spacing.sm,
-            backgroundColor: theme.colors.surfaceVariant, // Nice placeholder color while loading
-          }}
-          // 'cover' ensures the image fills the 16:9 box beautifully without stretching
-          resizeMode="cover"
-        />
-      )
-    },
-  }
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
       {/* M3 App Bar with a back button */}
@@ -86,40 +58,7 @@ export default function ArticleScreen({ route, navigation }: Props) {
         </Text>
 
         <View>
-          <RenderHtml
-            source={{ html: article.description }}
-            contentWidth={spacing.md}
-            tagsStyles={{
-              body: {
-                color: theme.colors.onSurfaceVariant,
-                fontSize: 14,
-                lineHeight: 24,
-                fontFamily: theme.fonts.bodyMedium.fontFamily,
-              },
-              a: {
-                color: theme.colors.primary,
-                textDecorationLine: 'underline',
-              },
-              h1: { color: theme.colors.onSurface, fontWeight: 'bold' },
-              h2: { color: theme.colors.onSurface, fontWeight: 'bold' },
-              p: {
-                marginTop: spacing.sm,
-                marginBottom: spacing.sm,
-                fontFamily: theme.fonts.bodyMedium.fontFamily,
-              },
-              figure: {
-                width: '100%',
-              },
-              figcaption: {
-                fontStyle: 'italic',
-                fontSize: fontSize.labelSmall,
-                color: theme.colors.onSurfaceVariant,
-                textAlign: 'center',
-                marginTop: spacing.xs,
-              },
-            }}
-            renderers={renderers} // Pass the new v6 renderer here!
-          />
+          <HtmlRenderer html={article.description} currentWidth={width} />
         </View>
       </ScrollView>
     </View>
