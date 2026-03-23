@@ -21,7 +21,15 @@ interface FeedScreenProps {
 export default function FeedScreen({ isFocused }: FeedScreenProps) {
   const styles = makeStyles(useTheme<MD3Theme>())
   const [filter, setFilter] = useState<FilterValue>('all')
-  const { sections, isSyncing, syncWithNetwork, refreshLocal } = useFeeds(filter, isFocused)
+  const {
+    sections,
+    isSyncing,
+    showSnackbar,
+    setShowSnackbar,
+    snackbarText,
+    syncWithNetwork,
+    refreshLocal,
+  } = useFeeds(filter, isFocused)
   const [addNewSource, setAddNewSource] = useState<boolean>(false)
   const { onScroll } = useScrollAnimation()
 
@@ -74,7 +82,7 @@ export default function FeedScreen({ isFocused }: FeedScreenProps) {
         setVisible={setAddNewSource}
         onSourceAdded={refreshLocal}
       />
-      <Snackbar text="Added new source." />
+      <Snackbar visible={showSnackbar} setVisible={setShowSnackbar} text={snackbarText} />
     </View>
   )
 }

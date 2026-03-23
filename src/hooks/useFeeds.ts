@@ -5,7 +5,9 @@ import { SourceWithArticles } from '../database/schema'
 
 export function useFeeds(filter: FilterValue, isFocused: boolean) {
   const [feeds, setFeeds] = useState<SourceWithArticles[]>([])
-  const [isSyncing, setIsSyncing] = useState(false)
+  const [isSyncing, setIsSyncing] = useState<boolean>(false)
+  const [showSnackbar, setShowSnackbar] = useState<boolean>(false)
+  const [snackbarText, setSnackbarText] = useState<string>()
 
   // 1. Handle Fetching
   const fetchLocalFeeds = useCallback(async () => {
@@ -14,6 +16,12 @@ export function useFeeds(filter: FilterValue, isFocused: boolean) {
     setFeeds(nextFeeds.filter((feed) => feed.articles.length > 0))
   }, [filter])
 
+  const displaySuccessMessage = (message: string) => {
+    setShowSnackbar(true)
+    setSnackbarText(message)
+    setTimeout(() => setShowSnackbar(false), 1500)
+  }
+
   // 2. Handle Syncing
   const syncWithNetwork = useCallback(async () => {
     setIsSyncing(true)
@@ -21,6 +29,7 @@ export function useFeeds(filter: FilterValue, isFocused: boolean) {
       await refreshArticles()
       await fetchLocalFeeds()
     } finally {
+      displaySuccessMessage('Feeds refreshed!')
       setIsSyncing(false)
     }
   }, [fetchLocalFeeds])
@@ -40,11 +49,13 @@ export function useFeeds(filter: FilterValue, isFocused: boolean) {
     if (isFocused) void fetchLocalFeeds()
   }, [fetchLocalFeeds, isFocused])
 
-  // Return exactly what the UI needs, nothing more.
   return {
     sections,
     isSyncing,
     syncWithNetwork,
+    showSnackbar,
+    setShowSnackbar,
+    snackbarText: snackbarText ?? 'Success',
     refreshLocal: fetchLocalFeeds,
   }
 }
