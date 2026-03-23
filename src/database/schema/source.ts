@@ -1,6 +1,9 @@
 // src/database/schema/source.ts
-import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core'
-import { FeedType } from '../../config/feed-source' // Adjust if needed
+import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core'
+
+import { FeedType } from '../../config/feed-source'
+
+// Adjust if needed
 
 export const SourceTable = sqliteTable('source', {
   id: text('id').primaryKey(),

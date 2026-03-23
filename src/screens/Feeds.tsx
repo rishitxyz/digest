@@ -1,18 +1,20 @@
-import React, { useState, useCallback } from 'react'
-import { View, StyleSheet, Animated } from 'react-native'
-import { Appbar, useTheme, Icon } from 'react-native-paper'
+import React, { useCallback, useState } from 'react'
+import { Animated, StyleSheet, View } from 'react-native'
+
+import { Appbar, Icon, useTheme } from 'react-native-paper'
 import type { MD3Theme } from 'react-native-paper'
+
 import FeedCard from '../components/FeedCard'
 import FeedFilter, { FilterValue } from '../components/FeedFilter'
-import { useScrollAnimation } from '../hooks/useScrollAnimation'
-import { fontSize, spacing } from '../theme/theme'
+import { EmptyState } from '../components/Feeds/EmptyState'
+import { SectionHeader } from '../components/Feeds/SectionHeader'
+import { Snackbar } from '../components/Snackbar'
 import AddNewSource from '../components/modals/AddNewSource'
 import { Article } from '../database/schema/article'
 import { Source } from '../database/schema/source'
 import { useFeeds } from '../hooks/useFeeds'
-import { SectionHeader } from '../components/Feeds/SectionHeader'
-import { EmptyState } from '../components/Feeds/EmptyState'
-import { Snackbar } from '../components/Snackbar'
+import { useScrollAnimation } from '../hooks/useScrollAnimation'
+import { fontSize, spacing } from '../theme/theme'
 
 interface FeedScreenProps {
   isFocused: boolean

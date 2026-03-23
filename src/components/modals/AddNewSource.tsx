@@ -1,21 +1,23 @@
 import * as React from 'react'
-import { View, StyleSheet } from 'react-native'
+import { StyleSheet, View } from 'react-native'
+
 import {
   Button,
-  Text,
   MD3Theme,
   Modal,
   Portal,
   SegmentedButtons,
+  Text,
   TextInput,
   useTheme,
 } from 'react-native-paper'
+
 import { FeedType } from '../../config/feed-source'
-import { shapes, spacing } from '../../theme/theme'
-import * as sourceService from '../../services/db/source'
-import * as articleService from '../../services/db/article'
-import { fetchRSSFeed, quickFeedCheck } from '../../services/feed-service'
 import * as redditService from '../../parser/reddit-json'
+import * as articleService from '../../services/db/article'
+import * as sourceService from '../../services/db/source'
+import { fetchRSSFeed, quickFeedCheck } from '../../services/feed-service'
+import { shapes, spacing } from '../../theme/theme'
 
 interface AddNewSourceProps {
   visible: boolean

@@ -1,11 +1,13 @@
-import { View, StyleSheet } from 'react-native'
-import { Text, IconButton, MD3Theme, useTheme } from 'react-native-paper'
-import { Source } from '../../database/schema/source'
-import { FeedType } from '../../config/feed-source'
+import { useCallback } from 'react'
+import { StyleSheet, View } from 'react-native'
+
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
+import { IconButton, MD3Theme, Text, useTheme } from 'react-native-paper'
+
+import { FeedType } from '../../config/feed-source'
+import { Source } from '../../database/schema/source'
 import { RootStackParamList } from '../../navigation/types'
-import { useCallback } from 'react'
 import { spacing } from '../../theme/theme'
 
 interface SectionHeaderProps {

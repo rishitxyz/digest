@@ -1,9 +1,11 @@
 import * as React from 'react'
 import { View } from 'react-native'
+
+import { Button, Checkbox, MD3Theme, Modal, Portal, TextInput, useTheme } from 'react-native-paper'
+
 import { Source } from '../../database/schema/source'
-import { MD3Theme, Portal, Modal, useTheme, TextInput, Button, Checkbox } from 'react-native-paper'
-import { shapes, spacing } from '../../theme/theme'
 import * as sourceService from '../../services/db/source'
+import { shapes, spacing } from '../../theme/theme'
 
 interface EditSourceProps {
   source: Source

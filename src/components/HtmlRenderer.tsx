@@ -1,6 +1,8 @@
 import { Image } from 'react-native'
+
 import { useTheme } from 'react-native-paper'
 import RenderHtml, { MixedStyleDeclaration } from 'react-native-render-html'
+
 import { fontSize, shapes, spacing } from '../theme/theme'
 
 interface HtmlRendererProps {

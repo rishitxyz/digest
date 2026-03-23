@@ -1,4 +1,5 @@
 import { parseFeed } from '@rowanmanning/feed-parser'
+
 import { Article } from '../database/schema/article'
 
 export const parseXMLFeed = (

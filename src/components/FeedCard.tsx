@@ -1,16 +1,18 @@
 import React from 'react'
-import { View, Image, StyleSheet } from 'react-native'
-import { Card, Text, useTheme } from 'react-native-paper'
-import type { MD3Theme } from 'react-native-paper'
-import { spacing, shapes } from '../theme/theme'
-import { getRelativeTime } from '../utils/date'
-import { Source } from '../database/schema/source'
-import { Article } from '../database/schema/article'
-import { markArticleAsRead } from '../services/db/article'
-import { FeedType } from '../config/feed-source'
+import { Image, StyleSheet, View } from 'react-native'
+
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
+import { Card, Text, useTheme } from 'react-native-paper'
+import type { MD3Theme } from 'react-native-paper'
+
+import { FeedType } from '../config/feed-source'
+import { Article } from '../database/schema/article'
+import { Source } from '../database/schema/source'
 import { RootStackParamList } from '../navigation/types'
+import { markArticleAsRead } from '../services/db/article'
+import { shapes, spacing } from '../theme/theme'
+import { getRelativeTime } from '../utils/date'
 
 interface FeedCardProps {
   source: Source

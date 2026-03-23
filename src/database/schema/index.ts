@@ -1,6 +1,7 @@
 import { openDatabaseSync } from 'expo-sqlite'
-import { drizzle } from 'drizzle-orm/expo-sqlite'
+
 import { relations } from 'drizzle-orm'
+import { drizzle } from 'drizzle-orm/expo-sqlite'
 
 import * as articleSchema from './article'
 import * as sourceSchema from './source'

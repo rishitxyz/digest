@@ -1,10 +1,11 @@
-import { eq, or, desc, asc } from 'drizzle-orm'
-import { db, SourceWithArticles } from '../../database/schema'
-import { CreateSource, Source, SourceTable } from '../../database/schema/source'
-import { ArticleTable } from '../../database/schema/article'
+import { asc, desc, eq, or } from 'drizzle-orm'
+
 import { FeedType } from '../../config/feed-source'
-import { fetchAll } from '../feed-service'
+import { SourceWithArticles, db } from '../../database/schema'
+import { ArticleTable } from '../../database/schema/article'
+import { CreateSource, Source, SourceTable } from '../../database/schema/source'
 import { fetchAllSubReddits } from '../../parser/reddit-json'
+import { fetchAll } from '../feed-service'
 
 export const updateById = (id: string, source: Source): Source => {
   return db.update(SourceTable).set(source).returning().get()

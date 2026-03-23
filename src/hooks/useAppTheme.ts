@@ -1,6 +1,8 @@
 import { useCallback, useState } from 'react'
-import { storage, STORAGE_KEYS } from '../database/mmkv'
+
 import { useMaterial3Theme } from 'react-native-material3-theme'
+
+import { STORAGE_KEYS, storage } from '../database/mmkv'
 
 export const useAppTheme = () => {
   const [isDarkMode, setIsDarkMode] = useState<boolean>(

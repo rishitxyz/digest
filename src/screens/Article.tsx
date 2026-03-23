@@ -1,15 +1,17 @@
 import React, { useState } from 'react'
-import { ScrollView, StyleSheet, View, Image, useWindowDimensions } from 'react-native'
-import { Text, Appbar, useTheme } from 'react-native-paper'
+import { Image, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native'
+
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
-import { RootStackParamList } from '../navigation/types'
-import { spacing, shapes, fontSize } from '../theme/theme'
-import { getRelativeTime } from '../utils/date'
-import { toggleBookmarked } from '../services/db/article'
-import { Article } from '../database/schema/article'
-import * as articleService from '../services/db/article'
+import { Appbar, Text, useTheme } from 'react-native-paper'
 import RenderHtml from 'react-native-render-html'
+
 import { HtmlRenderer } from '../components/HtmlRenderer'
+import { Article } from '../database/schema/article'
+import { RootStackParamList } from '../navigation/types'
+import { toggleBookmarked } from '../services/db/article'
+import * as articleService from '../services/db/article'
+import { fontSize, shapes, spacing } from '../theme/theme'
+import { getRelativeTime } from '../utils/date'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ArticleDetail'>
 

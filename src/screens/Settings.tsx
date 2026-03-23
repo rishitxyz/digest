@@ -1,10 +1,12 @@
 import React, { useState } from 'react'
-import { View, StyleSheet, ScrollView } from 'react-native'
-import { Appbar, List, Switch, Divider, Menu, useTheme, Button } from 'react-native-paper'
+import { ScrollView, StyleSheet, View } from 'react-native'
+
+import { Appbar, Button, Divider, List, Menu, Switch, useTheme } from 'react-native-paper'
 import type { MD3Theme } from 'react-native-paper'
-import { clearAllDeviceData, exportDb } from '../utils/user-data'
+
 import { fontOptions, fontOptionsType } from '../hooks/useAppFonts'
 import { fontSize } from '../theme/theme'
+import { clearAllDeviceData, exportDb } from '../utils/user-data'
 
 interface SettingsProps {
   isFocused: boolean

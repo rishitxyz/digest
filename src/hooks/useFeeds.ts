@@ -1,7 +1,8 @@
-import { useState, useCallback, useEffect, useMemo } from 'react'
-import { getSourcesWithLatestArticles, refreshArticles } from '../services/db/source'
+import { useCallback, useEffect, useMemo, useState } from 'react'
+
 import { FilterValue } from '../components/FeedFilter'
 import { SourceWithArticles } from '../database/schema'
+import { getSourcesWithLatestArticles, refreshArticles } from '../services/db/source'
 
 export function useFeeds(filter: FilterValue, isFocused: boolean) {
   const [feeds, setFeeds] = useState<SourceWithArticles[]>([])

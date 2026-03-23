@@ -1,4 +1,5 @@
-import { sqliteTable, text, integer } from 'drizzle-orm/sqlite-core'
+import { integer, sqliteTable, text } from 'drizzle-orm/sqlite-core'
+
 import { SourceTable } from './source'
 
 export const ArticleTable = sqliteTable('article', {

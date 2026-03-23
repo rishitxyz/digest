@@ -1,19 +1,22 @@
 import React, { useEffect, useState } from 'react'
 import { ScrollView, StyleSheet, View } from 'react-native'
-import { Text, Appbar, List, Divider, useTheme, ActivityIndicator } from 'react-native-paper'
+
 import * as WebBrowser from 'expo-web-browser'
-import { spacing, shapes } from '../theme/theme'
-import { getRelativeTime } from '../utils/date'
+
 import { NativeStackScreenProps } from '@react-navigation/native-stack'
+import { ActivityIndicator, Appbar, Divider, List, Text, useTheme } from 'react-native-paper'
+
+import { MarkdownText } from '../components/MarkdownText'
+import { MenuAction } from '../components/Menu'
+import { CommentThread } from '../components/RedditPost/CommentThread'
+import { WebViewPage } from '../components/WebViewPage'
+import { Article } from '../database/schema/article'
 import { RootStackParamList } from '../navigation/types'
 import { fetchComments } from '../parser/reddit-json'
 import * as articleService from '../services/db/article'
-import { Article } from '../database/schema/article'
-import { MarkdownText } from '../components/MarkdownText'
-import { WebViewPage } from '../components/WebViewPage'
-import { MenuAction } from '../components/Menu'
-import { CommentThread } from '../components/RedditPost/CommentThread'
+import { shapes, spacing } from '../theme/theme'
 import { Comment } from '../types/comment'
+import { getRelativeTime } from '../utils/date'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'RedditPost'>
 

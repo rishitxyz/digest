@@ -1,5 +1,7 @@
-import { MD3LightTheme, MD3DarkTheme, configureFonts, MD3Theme } from 'react-native-paper'
-import type { useMaterial3Theme } from 'react-native-material3-theme' // 1. Import the type
+import type { useMaterial3Theme } from 'react-native-material3-theme'
+import { MD3DarkTheme, MD3LightTheme, MD3Theme, configureFonts } from 'react-native-paper'
+
+// 1. Import the type
 
 // ── M3 Expressive Spacing Tokens (8dp grid) ──────────────────────────
 export const spacing = {

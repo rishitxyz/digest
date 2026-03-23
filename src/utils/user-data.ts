@@ -1,6 +1,7 @@
 import { File } from 'expo-file-system'
-import * as SQLite from 'expo-sqlite'
 import * as Sharing from 'expo-sharing'
+import * as SQLite from 'expo-sqlite'
+
 import { db } from '../database/schema'
 import { ArticleTable } from '../database/schema/article'
 import { SourceTable } from '../database/schema/source'

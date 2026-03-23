@@ -1,18 +1,20 @@
 import React, { useState } from 'react'
-import { View, StyleSheet, ScrollView } from 'react-native'
+import { ScrollView, StyleSheet, View } from 'react-native'
+
 import {
+  ActivityIndicator,
   Appbar,
   Divider,
   List,
-  Text,
   MD3Theme,
+  Text,
   useTheme,
-  ActivityIndicator,
 } from 'react-native-paper'
-import { spacing, shapes, fontSize } from '../theme/theme'
+
+import EditSource from '../components/modals/EditSource'
 import { Source } from '../database/schema/source'
 import * as sourceService from '../services/db/source'
-import EditSource from '../components/modals/EditSource'
+import { fontSize, shapes, spacing } from '../theme/theme'
 
 interface SourcesListProps {
   isFocused: boolean

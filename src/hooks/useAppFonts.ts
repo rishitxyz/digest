@@ -1,4 +1,5 @@
 import { useCallback, useState } from 'react'
+
 import {
   FiraSans_400Regular,
   FiraSans_500Medium,
@@ -6,14 +7,14 @@ import {
   FiraSans_700Bold,
   useFonts,
 } from '@expo-google-fonts/fira-sans'
-
 import {
   Poppins_400Regular,
   Poppins_500Medium,
   Poppins_600SemiBold,
   Poppins_700Bold,
 } from '@expo-google-fonts/poppins'
-import { storage, STORAGE_KEYS } from '../database/mmkv'
+
+import { STORAGE_KEYS, storage } from '../database/mmkv'
 
 export type fontOptionsType = 'FiraSans' | 'Poppins'
 

@@ -1,5 +1,7 @@
-import { View, StyleSheet } from 'react-native'
+import { StyleSheet, View } from 'react-native'
+
 import { MD3Theme, Text, useTheme } from 'react-native-paper'
+
 import { spacing } from '../../theme/theme'
 
 export const EmptyState = ({ filter }: { filter: string }) => {

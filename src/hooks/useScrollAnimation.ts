@@ -1,5 +1,5 @@
-import { useRef, useCallback } from 'react'
-import { Animated, NativeSyntheticEvent, NativeScrollEvent } from 'react-native'
+import { useCallback, useRef } from 'react'
+import { Animated, NativeScrollEvent, NativeSyntheticEvent } from 'react-native'
 
 /**
  * Custom hook for scroll-based FAB animation.

@@ -1,13 +1,15 @@
-import { ScrollView, StyleSheet, View } from 'react-native'
-import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import React, { useEffect, useState } from 'react'
-import { RootStackParamList } from '../navigation/types'
-import { Article } from '../database/schema/article'
+import { ScrollView, StyleSheet, View } from 'react-native'
+
+import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { ActivityIndicator, Appbar, List, useTheme } from 'react-native-paper'
-import { spacing, shapes } from '../theme/theme'
-import { FeedType } from '../config/feed-source'
-import * as articleService from '../services/db/article'
+
 import FeedCard from '../components/FeedCard'
+import { FeedType } from '../config/feed-source'
+import { Article } from '../database/schema/article'
+import { RootStackParamList } from '../navigation/types'
+import * as articleService from '../services/db/article'
+import { shapes, spacing } from '../theme/theme'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'AllArticles'>
 

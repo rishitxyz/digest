@@ -1,9 +1,11 @@
 import { Fragment, useState } from 'react'
 import { View } from 'react-native'
-import { List, Text, Icon, Divider, MD3Theme } from 'react-native-paper'
-import { MarkdownText } from '../MarkdownText'
+
+import { Divider, Icon, List, MD3Theme, Text } from 'react-native-paper'
+
 import { fontSize, spacing } from '../../theme/theme'
 import { Comment } from '../../types/comment'
+import { MarkdownText } from '../MarkdownText'
 
 interface CommentThreadProps {
   comment: Comment

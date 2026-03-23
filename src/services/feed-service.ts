@@ -3,6 +3,7 @@ import { SourceWithArticles } from '../database/schema'
 import { Article } from '../database/schema/article'
 import { Source, SourceValidationError, ValidSource } from '../database/schema/source'
 import { parseXMLFeed } from '../parser/rss-parser'
+
 import * as articleService from './db/article'
 
 export const quickFeedCheck = async (url: string): Promise<SourceValidationError | ValidSource> => {

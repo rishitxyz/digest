@@ -1,7 +1,9 @@
 import React from 'react'
-import { View, StyleSheet } from 'react-native'
+import { StyleSheet, View } from 'react-native'
+
 import { SegmentedButtons, useTheme } from 'react-native-paper'
 import type { MD3Theme } from 'react-native-paper'
+
 import { spacing } from '../theme/theme'
 
 export type FilterValue = 'all' | 'bookmarks'
