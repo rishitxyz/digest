@@ -10,8 +10,8 @@ import AddNewSource from '../components/modals/AddNewSource'
 import { Article } from '../database/schema/article'
 import { Source } from '../database/schema/source'
 import { useFeeds } from '../hooks/useFeeds'
-import { SectionHeader } from '../components/FeedScreen/SectionHeader'
-import { EmptyState } from '../components/FeedScreen/EmptyState'
+import { SectionHeader } from '../components/Feeds/SectionHeader'
+import { EmptyState } from '../components/Feeds/EmptyState'
 import { Snackbar } from '../components/Snackbar'
 
 interface FeedScreenProps {
