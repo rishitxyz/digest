@@ -28,17 +28,23 @@ const CommentThread = ({ comment, depth = 0 }: { comment: Comment; depth?: numbe
 
   // A simple visual indicator of depth (optional, but looks great)
   const indentStyles = {
-    marginLeft: depth * 12, // Indent 12px for every layer deep
+    marginLeft: depth * 6, // Indent 12px for every layer deep
     borderLeftWidth: depth > 0 ? 1 : 0,
     borderLeftColor: theme.colors.outlineVariant,
-    paddingLeft: depth > 0 ? 8 : 0,
+    paddingLeft: depth > 0 ? 4 : 0,
   }
 
   return (
     <View style={indentStyles}>
       <List.Item
         title={() => (
-          <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
+          <View
+            style={{
+              flex: 1,
+              flexDirection: 'row',
+              justifyContent: 'space-between',
+            }}
+          >
             <Text>u/{comment.author}</Text>
             <Text style={{ fontWeight: '500' }}>
               {comment.score}
@@ -46,8 +52,12 @@ const CommentThread = ({ comment, depth = 0 }: { comment: Comment; depth?: numbe
             </Text>
           </View>
         )}
-        description={<MarkdownText markdown={comment.body} />}
-        titleNumberOfLines={1}
+        description={
+          <MarkdownText
+            markdown={comment.body}
+            markdownStyle={{ paragraph: { fontSize: 13 }, list: { fontSize: 13 } }}
+          />
+        }
         descriptionNumberOfLines={0}
         titleStyle={{ fontSize: 13, fontWeight: '500', color: theme.colors.primary }}
         descriptionStyle={{
@@ -70,9 +80,14 @@ const CommentThread = ({ comment, depth = 0 }: { comment: Comment; depth?: numbe
             </Text>
           ) : (
             // If they clicked it, recursively render the children!
-            <View style={{ marginTop: 4 }}>
+            <View style={{ marginTop: 2 }}>
               {comment.replies.map((reply, idx) => (
-                <CommentThread key={`${reply.author}-${idx}`} comment={reply} depth={depth + 1} />
+                <React.Fragment key={`comment-thread-${idx}`}>
+                  <CommentThread key={`${reply.author}-${idx}`} comment={reply} depth={depth + 1} />
+                  <Divider
+                    style={{ backgroundColor: theme.colors.outlineVariant, marginVertical: 2 }}
+                  />
+                </React.Fragment>
               ))}
             </View>
           )}
@@ -222,7 +237,7 @@ export default function RedditPost({ route, navigation }: Props) {
             >
               Comments
             </Text>
-            <List.Section>
+            <List.Section style={{ marginLeft: -8 }}>
               {commentsLoading ? (
                 <ActivityIndicator
                   animating
@@ -245,7 +260,7 @@ export default function RedditPost({ route, navigation }: Props) {
                     {/* 2. Keep the divider for top-level comments only */}
                     {idx !== comments.length - 1 && (
                       <Divider
-                        style={{ backgroundColor: theme.colors.outlineVariant, marginVertical: 4 }}
+                        style={{ backgroundColor: theme.colors.outlineVariant, marginVertical: 2 }}
                       />
                     )}
                   </React.Fragment>
