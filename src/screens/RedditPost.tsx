@@ -12,7 +12,7 @@ import { CommentThread } from '../components/RedditPost/CommentThread'
 import { WebViewPage } from '../components/WebViewPage'
 import { Article } from '../database/schema/article'
 import { RootStackParamList } from '../navigation/types'
-import { fetchComments } from '../parser/reddit-json'
+import { REDDIT_BASE_URL, fetchComments } from '../parser/reddit-json'
 import * as articleService from '../services/db/article'
 import { shapes, spacing } from '../theme/theme'
 import { Comment } from '../types/comment'
@@ -46,7 +46,7 @@ export default function RedditPost({ route, navigation }: Props) {
     {
       key: 'original',
       title: 'Open in browser',
-      onPress: () => handleOpenArticle(`https://www.reddit.com${post.link!}`),
+      onPress: () => handleOpenArticle(`${REDDIT_BASE_URL}${post.link!}`),
       disabled: viewMode === 'original',
     },
     {

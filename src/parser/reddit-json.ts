@@ -3,6 +3,8 @@ import { Source } from '../database/schema/source'
 import * as articleService from '../services/db/article'
 import { convertToStandardYouTubeLink } from '../utils/youtube-link'
 
+export const REDDIT_BASE_URL: string = 'https://www.reddit.com'
+
 export const fetchAllSubReddits = async (sources: Source[]) => {
   await Promise.all(
     sources.map(async (source) => {
@@ -28,7 +30,7 @@ export const fetchPosts = async (
   source: Source,
   type: 'hot' | 'new' | 'top' = 'hot',
 ): Promise<Article[]> => {
-  const response = await fetch(`https://www.reddit.com/${source.url}/${type}.json`)
+  const response = await fetch(`${REDDIT_BASE_URL}/${source.url}/${type}.json`)
   const json = await response.json()
 
   return json.data.children.map((child: any) => {
@@ -56,7 +58,7 @@ export const fetchPosts = async (
 // Example permalink: /r/androidapps/comments/1abcde/some_post_title/
 export const fetchComments = async (permalink: string) => {
   try {
-    const url = `https://www.reddit.com${permalink}.json`
+    const url = `${REDDIT_BASE_URL}${permalink}.json`
     const response = await fetch(url)
     const json = await response.json()
 
