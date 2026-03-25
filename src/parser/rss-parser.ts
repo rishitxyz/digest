@@ -21,5 +21,6 @@ export const parseXMLFeed = (
     publishedAt: item.published?.toString() ?? new Date().toString(),
     isRead: false,
     bookmarked: false,
+    hasEmbeddedHtml: true,
   }))
 }

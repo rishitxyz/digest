@@ -1,10 +1,10 @@
 import React from 'react'
 import { StyleSheet, View } from 'react-native'
 
-import { SegmentedButtons, useTheme } from 'react-native-paper'
+import { Chip, Text, useTheme } from 'react-native-paper'
 import type { MD3Theme } from 'react-native-paper'
 
-import { spacing } from '../theme/theme'
+import { fontSize, shapes, spacing } from '../theme/theme'
 
 export type FilterValue = 'all' | 'bookmarks'
 
@@ -18,10 +18,16 @@ export default function FeedFilter({ value, onChange }: FeedFilterProps) {
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.surface }]}>
-      <SegmentedButtons
-        value={value}
-        onValueChange={(val) => onChange(val as FilterValue)}
-        buttons={[
+      <View style={{ gap: 10, marginBottom: spacing.md }}>
+        <Text variant="bodySmall" style={{ color: theme.colors.primary, fontWeight: 600 }}>
+          DAILY DIGEST
+        </Text>
+        <Text variant="headlineLarge" style={{ fontWeight: 700 }}>
+          Curated For You.
+        </Text>
+      </View>
+      <View style={{ flex: 1, flexDirection: 'row', gap: 15 }}>
+        {[
           {
             value: 'all',
             label: 'All',
@@ -36,17 +42,29 @@ export default function FeedFilter({ value, onChange }: FeedFilterProps) {
             checkedColor: theme.colors.onPrimaryContainer,
             uncheckedColor: theme.colors.onSurfaceVariant,
           },
-        ]}
-        style={styles.buttons}
-      />
+        ].map((button, index) => (
+          <Chip
+            key={index}
+            mode={button.value === value ? 'flat' : 'outlined'}
+            selected={button.value === value}
+            compact
+            style={{
+              borderRadius: shapes.small,
+              paddingHorizontal: spacing.md,
+            }}
+            onTouchEnd={() => onChange(button.value as FilterValue)}
+          >
+            {button.label}
+          </Chip>
+        ))}
+      </View>
     </View>
   )
 }
 
 const styles = StyleSheet.create({
   container: {
-    paddingHorizontal: spacing.lg,
-    paddingVertical: spacing.md,
+    padding: spacing.md,
   },
   buttons: {
     // RNP will handle styling internally

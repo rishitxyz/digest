@@ -1,3 +1,5 @@
+import { Platform } from 'react-native'
+
 import type { useMaterial3Theme } from 'react-native-material3-theme'
 import { MD3DarkTheme, MD3LightTheme, MD3Theme, configureFonts } from 'react-native-paper'
 
@@ -27,10 +29,67 @@ export const shapes = {
 
 // ... (Keep your lightColors and darkColors exactly as they are) ...
 const lightColors = {
-  /* ... */
+  primary: '#4A654E', // Deep forest green (FAB, active buttons)
+  onPrimary: '#FFFFFF',
+  primaryContainer: '#CCEBCE', // Soft mint/sage (Active bottom nav pill)
+  onPrimaryContainer: '#06210F', // Dark green text on the active nav pill
+
+  secondary: '#536353', // Muted olive (Metadata, secondary text)
+  onSecondary: '#FFFFFF',
+  secondaryContainer: '#D6E8D4', // Light grey-green (Inactive tab backgrounds)
+  onSecondaryContainer: '#111F13',
+
+  background: '#F8FAF5', // Crisp off-white background
+  onBackground: '#191C19', // Charcoal/green-tinted text
+
+  surface: '#F8FAF5', // Base surface color
+  onSurface: '#191C19', // Dark text for headlines
+  surfaceVariant: '#E9EBE4', // Slightly darker off-white for article cards
+  onSurfaceVariant: '#424940', // Muted text inside cards
+
+  outline: '#72796F', // Dividers and borders
+  outlineVariant: '#C2C5BE', // Faint borders
+
+  // ADD THIS:
+  elevation: {
+    level0: 'transparent',
+    level1: '#F3F5F0', // Slightly darker than background
+    level2: '#EEF0EB', // Used by BottomNav by default
+    level3: '#EAECE6',
+    level4: '#E8EBE4',
+    level5: '#E5E9DF',
+  },
 }
+
 const darkColors = {
-  /* ... */
+  primary: '#B0CFB3', // Lighter sage for dark mode legibility
+  onPrimary: '#1C3622',
+  primaryContainer: '#334D37', // Deep forest green container
+  onPrimaryContainer: '#CCEBCE',
+
+  secondary: '#BACCB8',
+  onSecondary: '#263427',
+  secondaryContainer: '#3C4B3D',
+  onSecondaryContainer: '#D6E8D4',
+
+  background: '#111411', // Very dark charcoal background
+  onBackground: '#E1E3DF', // Light grey-green text
+
+  surface: '#111411',
+  onSurface: '#E1E3DF',
+  surfaceVariant: '#2D312D', // Elevated dark grey cards
+  onSurfaceVariant: '#C2C9BD',
+
+  outline: '#8C9388',
+  outlineVariant: '#424940',
+  elevation: {
+    level0: 'transparent',
+    level1: '#161916',
+    level2: '#1A1E1A', // Used by BottomNav by default
+    level3: '#1E231E',
+    level4: '#202520',
+    level5: '#232923',
+  },
 }
 
 export const fontSize = {
@@ -193,12 +252,18 @@ export const getAppTheme = (
   const baseTheme = isDarkMode ? DarkTheme : LightTheme
   const dynamicFonts = getDynamicFonts(selectedFont)
 
-  // If the device has system colors (Android 12+), extract the right palette
-  const systemColors = systemTheme ? (isDarkMode ? systemTheme.dark : systemTheme.light) : null
+  // 2. THE FIX: Only extract system colors if we are explicitly on an Android device.
+  // On iOS, this forces systemColors to be null, allowing your custom green theme to shine through.
+  const systemColors =
+    Platform.OS === 'android' && systemTheme
+      ? isDarkMode
+        ? systemTheme.dark
+        : systemTheme.light
+      : null
 
   return {
     ...baseTheme,
-    // Merge base colors with system colors (if they exist)
+    // Merge base colors with system colors (if they exist and we are on Android)
     colors: {
       ...baseTheme.colors,
       ...(systemColors || {}),

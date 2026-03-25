@@ -39,7 +39,9 @@ export default function FeedCard({ source, article }: FeedCardProps) {
       style={[
         styles.card,
         {
-          borderRadius: shapes.extraLarge,
+          borderRadius: shapes.large,
+          borderWidth: 1,
+          borderColor: theme.colors.outlineVariant,
         },
       ]}
       onPress={() => handleCardPress(source, article)}
@@ -62,7 +64,7 @@ export default function FeedCard({ source, article }: FeedCardProps) {
             variant="labelSmall"
             style={{ color: theme.colors.primary, marginBottom: spacing.sm }}
           >
-            {source.name}
+            {source.name.toUpperCase()}
           </Text>
           <Text
             variant="labelSmall"
@@ -73,21 +75,19 @@ export default function FeedCard({ source, article }: FeedCardProps) {
         </View>
         <Text
           variant="headlineSmall"
-          numberOfLines={2}
+          numberOfLines={0}
           style={[styles.title, { color: theme.colors.onSurface }]}
         >
           {article.title}
         </Text>
 
-        {article.summary !== '' && (
-          <Text
-            variant="bodyMedium"
-            numberOfLines={3}
-            style={[styles.summary, { color: theme.colors.onSurfaceVariant }]}
-          >
-            {article.summary}
-          </Text>
-        )}
+        <Text
+          variant="bodyMedium"
+          numberOfLines={2}
+          style={[styles.summary, { color: theme.colors.onSurfaceVariant, fontStyle: 'italic' }]}
+        >
+          {article.summary && article.summary !== '' ? article.summary : article.description}
+        </Text>
       </Card.Content>
     </Card>
   )

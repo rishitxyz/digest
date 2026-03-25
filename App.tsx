@@ -1,27 +1,27 @@
-import React, { useState, useCallback, useMemo } from 'react'
-import { StatusBar } from 'expo-status-bar'
-import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
-import { PaperProvider, BottomNavigation, useTheme } from 'react-native-paper'
-import type { MD3Theme } from 'react-native-paper'
+import React, { useCallback, useMemo, useState } from 'react'
 import { StyleSheet } from 'react-native'
+
 import * as SplashScreen from 'expo-splash-screen'
+import { StatusBar } from 'expo-status-bar'
 
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { RootStackParamList } from './src/navigation/types'
-import ArticleScreen from './src/screens/Article'
+import { BottomNavigation, PaperProvider, useTheme } from 'react-native-paper'
+import type { MD3Theme } from 'react-native-paper'
+import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 
-import { Route, routes } from './src/routes'
-import { getAppTheme } from './src/theme/theme'
-
-import FeedScreen from './src/screens/Feeds'
-import Settings from './src/screens/Settings'
 import { initializeDatabase } from './src/database/schema'
-import SourcesList from './src/screens/Sources'
-import RedditPost from './src/screens/RedditPost'
-import AllArticles from './src/screens/AllArticles'
 import { fontOptionsType, useAppFonts } from './src/hooks/useAppFonts'
 import { useAppTheme } from './src/hooks/useAppTheme'
+import { RootStackParamList } from './src/navigation/types'
+import { Route, routes } from './src/routes'
+import AllArticles from './src/screens/AllArticles'
+import ArticleScreen from './src/screens/Article'
+import FeedScreen from './src/screens/Feeds'
+import RedditPost from './src/screens/RedditPost'
+import Settings from './src/screens/Settings'
+import SourcesList from './src/screens/Sources'
+import { getAppTheme } from './src/theme/theme'
 
 initializeDatabase()
 
@@ -82,14 +82,16 @@ function AppContent({
         navigationState={{ index, routes }}
         onIndexChange={setIndex}
         renderScene={renderScene}
-        barStyle={{
-          backgroundColor: theme.colors.elevation.level2,
-        }}
+        barStyle={
+          {
+            // backgroundColor: theme.colors.elevation.level2,
+          }
+        }
         activeColor={theme.colors.primary}
         inactiveColor={theme.colors.onSurfaceVariant}
         activeIndicatorStyle={{
           backgroundColor: theme.colors.secondaryContainer,
-          borderRadius: 9999,
+          // borderRadius: 9999,
         }}
         theme={theme}
       />
