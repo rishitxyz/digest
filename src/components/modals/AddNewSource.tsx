@@ -1,5 +1,12 @@
 import * as React from 'react'
-import { StyleSheet, View } from 'react-native'
+import {
+  Keyboard,
+  KeyboardAvoidingView,
+  Platform,
+  StyleSheet,
+  TouchableWithoutFeedback,
+  View,
+} from 'react-native'
 
 import {
   Button,
@@ -98,66 +105,75 @@ const AddNewSource = ({ visible, setVisible, onSourceAdded }: AddNewSourceProps)
         contentContainerStyle={styles.modalContainer}
         style={styles.modalOverlay}
       >
-        <Text variant="headlineSmall" style={styles.title}>
-          Add new source
-        </Text>
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : undefined}
+          keyboardVerticalOffset={Platform.OS === 'ios' ? 40 : 0}
+        >
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View>
+              <Text variant="headlineSmall" style={styles.title}>
+                Add new source
+              </Text>
 
-        <View style={styles.formContainer}>
-          <SegmentedButtons
-            value={sourceType}
-            onValueChange={(val) => setSourceType(val as FeedType)}
-            buttons={[
-              {
-                value: FeedType.RSS,
-                label: 'RSS',
-                icon: 'rss',
-              },
-              {
-                value: FeedType.SUB_REDDIT,
-                label: 'Subreddit',
-                icon: 'reddit',
-              },
-            ]}
-            style={styles.segmentedButtons}
-          />
+              <View style={styles.formContainer}>
+                <SegmentedButtons
+                  value={sourceType}
+                  onValueChange={(val) => setSourceType(val as FeedType)}
+                  buttons={[
+                    {
+                      value: FeedType.RSS,
+                      label: 'RSS',
+                      icon: 'rss',
+                    },
+                    {
+                      value: FeedType.SUB_REDDIT,
+                      label: 'Subreddit',
+                      icon: 'reddit',
+                    },
+                  ]}
+                  style={styles.segmentedButtons}
+                />
 
-          <TextInput
-            mode="outlined"
-            textContentType="name"
-            label="Give it a name"
-            value={source}
-            onChangeText={(text) =>
-              setSource(sourceType === FeedType.SUB_REDDIT ? cleanupInput(text) : text)
-            }
-            left={sourceType === FeedType.SUB_REDDIT ? <TextInput.Affix text="r/" /> : null}
-            style={styles.input}
-          />
+                <TextInput
+                  mode="outlined"
+                  textContentType="name"
+                  label="Give it a name"
+                  value={source}
+                  onChangeText={(text) =>
+                    setSource(sourceType === FeedType.SUB_REDDIT ? cleanupInput(text) : text)
+                  }
+                  left={sourceType === FeedType.SUB_REDDIT ? <TextInput.Affix text="r/" /> : null}
+                  style={styles.input}
+                />
 
-          <TextInput
-            mode="outlined"
-            textContentType="URL"
-            label={sourceType === FeedType.RSS ? 'Feed URL' : 'Subreddit name'}
-            value={sourceUrl}
-            onChangeText={(text) => setSourceUrl(cleanupInput(text))}
-            left={sourceType === FeedType.SUB_REDDIT ? <TextInput.Affix text="r/" /> : null}
-            style={styles.input}
-          />
-        </View>
+                <TextInput
+                  mode="outlined"
+                  textContentType="URL"
+                  label={sourceType === FeedType.RSS ? 'Feed URL' : 'Subreddit name'}
+                  value={sourceUrl}
+                  onChangeText={(text) => setSourceUrl(cleanupInput(text))}
+                  left={sourceType === FeedType.SUB_REDDIT ? <TextInput.Affix text="r/" /> : null}
+                  style={styles.input}
+                />
+              </View>
 
-        <View style={styles.actionContainer}>
-          <Button onPress={handleDismiss} textColor={theme.colors.primary}>
-            Cancel
-          </Button>
-          <Button
-            mode="contained"
-            onPress={addNewSource}
-            disabled={!source || !sourceUrl || loading}
-            loading={loading}
-            style={styles.addButton}
-          >
-            Add
-          </Button>
-        </View>
+              <View style={styles.actionContainer}>
+                <Button onPress={handleDismiss} textColor={theme.colors.primary}>
+                  Cancel
+                </Button>
+                <Button
+                  mode="contained"
+                  onPress={addNewSource}
+                  disabled={!source || !sourceUrl || loading}
+                  loading={loading}
+                  style={styles.addButton}
+                >
+                  Add
+                </Button>
+              </View>
+            </View>
+          </TouchableWithoutFeedback>
+        </KeyboardAvoidingView>
       </Modal>
     </Portal>
   )
