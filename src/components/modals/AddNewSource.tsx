@@ -102,6 +102,8 @@ const AddNewSource = ({ visible, setVisible, onSourceAdded }: AddNewSourceProps)
       <Modal
         visible={visible}
         onDismiss={handleDismiss}
+        dismissable
+        dismissableBackButton
         contentContainerStyle={styles.modalContainer}
         style={styles.modalOverlay}
       >
@@ -182,8 +184,11 @@ const AddNewSource = ({ visible, setVisible, onSourceAdded }: AddNewSourceProps)
 // Extract styles to keep JSX clean
 const makeStyles = (theme: MD3Theme) =>
   StyleSheet.create({
+    // display modal near top edge.
     modalOverlay: {
-      paddingHorizontal: spacing.lg, // Prevents modal from touching screen edges
+      paddingHorizontal: spacing.lg,
+      justifyContent: 'flex-start',
+      paddingTop: 80,
     },
     modalContainer: {
       backgroundColor: theme.colors.surface,

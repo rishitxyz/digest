@@ -1,7 +1,16 @@
 import * as React from 'react'
 import { View } from 'react-native'
 
-import { Button, Checkbox, MD3Theme, Modal, Portal, TextInput, useTheme } from 'react-native-paper'
+import {
+  Button,
+  Checkbox,
+  MD3Theme,
+  Modal,
+  Portal,
+  Text,
+  TextInput,
+  useTheme,
+} from 'react-native-paper'
 
 import { Source } from '../../database/schema/source'
 import * as sourceService from '../../services/db/source'
@@ -50,11 +59,13 @@ const EditSource = ({ source, visible, setVisible }: EditSourceProps) => {
           backgroundColor: theme.colors.background,
           padding: spacing.lg,
           borderRadius: shapes.extraLarge,
-          marginHorizontal: spacing.xl, // Added margin so it doesn't touch screen edges
+          marginHorizontal: spacing.sm, // Added margin so it doesn't touch screen edges
         }}
+        style={{ paddingHorizontal: spacing.lg, justifyContent: 'flex-start', paddingTop: 80 }}
       >
-        <View style={{ gap: 30 }}>
-          <View style={{ gap: 10 }}>
+        <View style={{ gap: 25 }}>
+          <Text variant="headlineSmall">Edit {source.name}</Text>
+          <View style={{ gap: 15 }}>
             <TextInput
               mode="outlined"
               textContentType="name"
