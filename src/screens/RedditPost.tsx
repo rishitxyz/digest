@@ -132,7 +132,7 @@ export default function RedditPost({ route, navigation }: Props) {
         <ScrollView contentContainerStyle={styles.content}>
           <View style={styles.author}>
             <Text variant="labelSmall" style={{ color: theme.colors.primary }}>
-              {post.author}
+              {post.author.toUpperCase()}
             </Text>
             <Text variant="labelSmall">{getRelativeTime(post.publishedAt)}</Text>
           </View>

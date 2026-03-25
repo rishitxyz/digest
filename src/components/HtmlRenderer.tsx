@@ -9,12 +9,14 @@ interface HtmlRendererProps {
   html: string
   currentWidth: number
   contentWidth?: number
+  fontsToBeUsed?: string[]
   tagsStyle?: Readonly<Record<string, MixedStyleDeclaration>>
 }
 
 export const HtmlRenderer = ({
   html,
   currentWidth,
+  fontsToBeUsed = [],
   contentWidth = spacing.md,
   tagsStyle = {},
 }: HtmlRendererProps) => {
@@ -54,6 +56,7 @@ export const HtmlRenderer = ({
     <RenderHtml
       source={{ html }}
       contentWidth={contentWidth}
+      systemFonts={fontsToBeUsed.concat([theme.fonts.bodyMedium.fontFamily])}
       tagsStyles={{
         body: {
           color: theme.colors.onSurfaceVariant,

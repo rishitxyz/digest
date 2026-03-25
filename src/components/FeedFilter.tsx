@@ -22,7 +22,10 @@ export default function FeedFilter({ value, onChange }: FeedFilterProps) {
         <Text variant="bodySmall" style={{ color: theme.colors.primary, fontWeight: 600 }}>
           DAILY DIGEST
         </Text>
-        <Text variant="headlineLarge" style={{ fontWeight: 700 }}>
+        <Text
+          variant="headlineLarge"
+          style={{ fontWeight: 700, color: theme.colors.onPrimaryContainer }}
+        >
           Curated For You.
         </Text>
       </View>

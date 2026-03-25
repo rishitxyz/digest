@@ -1,16 +1,15 @@
 import React, { useState } from 'react'
-import { Image, ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native'
+import { ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native'
 
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { Appbar, Text, useTheme } from 'react-native-paper'
-import RenderHtml from 'react-native-render-html'
 
 import { HtmlRenderer } from '../components/HtmlRenderer'
 import { Article } from '../database/schema/article'
 import { RootStackParamList } from '../navigation/types'
 import { toggleBookmarked } from '../services/db/article'
 import * as articleService from '../services/db/article'
-import { fontSize, shapes, spacing } from '../theme/theme'
+import { shapes, spacing } from '../theme/theme'
 import { getRelativeTime } from '../utils/date'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'ArticleDetail'>
@@ -46,8 +45,8 @@ export default function ArticleScreen({ route, navigation }: Props) {
 
       <ScrollView contentContainerStyle={styles.content}>
         <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
-          <Text variant="labelSmall" style={{ color: theme.colors.primary }}>
-            {article.author}
+          <Text variant="labelSmall" style={{ color: theme.colors.primary, letterSpacing: 1.2 }}>
+            {article.author.toUpperCase()}
           </Text>
           <Text variant="labelSmall">{getRelativeTime(article.publishedAt)}</Text>
         </View>

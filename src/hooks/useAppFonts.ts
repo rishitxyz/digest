@@ -22,7 +22,7 @@ import {
 
 import { STORAGE_KEYS, storage } from '../database/mmkv'
 
-export type fontOptionsType = 'FiraSans' | 'Poppins'
+export type fontOptionsType = 'FiraSans' | 'Poppins' | 'Newsreader'
 
 export const fontOptions = {
   firaSans: { displayName: 'Fira Sans', value: 'FiraSans' },

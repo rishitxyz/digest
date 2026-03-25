@@ -141,6 +141,7 @@ const AddNewSource = ({ visible, setVisible, onSourceAdded }: AddNewSourceProps)
                   textContentType="name"
                   label="Give it a name"
                   value={source}
+                  maxLength={15}
                   onChangeText={(text) =>
                     setSource(sourceType === FeedType.SUB_REDDIT ? cleanupInput(text) : text)
                   }

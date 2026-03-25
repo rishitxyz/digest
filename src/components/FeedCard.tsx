@@ -62,7 +62,7 @@ export default function FeedCard({ source, article }: FeedCardProps) {
         <View style={{ flex: 1, flexDirection: 'row', justifyContent: 'space-between' }}>
           <Text
             variant="labelSmall"
-            style={{ color: theme.colors.primary, marginBottom: spacing.sm }}
+            style={{ color: theme.colors.primary, marginBottom: spacing.sm, letterSpacing: 2 }}
           >
             {source.name.toUpperCase()}
           </Text>
