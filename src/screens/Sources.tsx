@@ -1,16 +1,9 @@
 import React, { useState } from 'react'
 import { ScrollView, StyleSheet, View } from 'react-native'
 
-import {
-  ActivityIndicator,
-  Appbar,
-  Divider,
-  List,
-  MD3Theme,
-  Text,
-  useTheme,
-} from 'react-native-paper'
+import { ActivityIndicator, Appbar, MD3Theme, Text, useTheme } from 'react-native-paper'
 
+import { SourceCard } from '../components/Sources/SourceCard'
 import EditSource from '../components/modals/EditSource'
 import { Source } from '../database/schema/source'
 import * as sourceService from '../services/db/source'
@@ -69,57 +62,28 @@ export default function SourcesList({ isFocused }: SourcesListProps) {
         ) : (
           <View>
             {rssSources.length > 0 && (
-              <View key="rss-view">
-                <List.Section key="rss-list-section">
-                  <List.Subheader
-                    key="rss-list-header"
-                    style={{ fontSize: fontSize.bodyLarge, fontWeight: 700 }}
-                  >
-                    <Text variant="titleMedium">RSS feeds</Text>
-                  </List.Subheader>
+              <View key="rss-view" style={{ marginVertical: spacing.lg }}>
+                <>
+                  <Text variant="headlineMedium">RSS feeds</Text>
                   {rssSources.map((source, index) => (
-                    <React.Fragment key={source.id}>
-                      <List.Item
-                        title={source.name}
-                        titleStyle={{ fontSize: fontSize.bodyMedium, fontWeight: '500' }}
-                        left={() => <List.Icon icon="pencil-box" />}
-                        // Swapped onTouchEnd for onPress, and passed the current source!
-                        onPress={() => handleEditSource(source)}
-                      />
-
-                      {index !== rssSources.length - 1 && (
-                        <Divider style={{ backgroundColor: theme.colors.outlineVariant }} />
-                      )}
-                    </React.Fragment>
+                    <SourceCard key={index} source={source} icon="rss" onPress={handleEditSource} />
                   ))}
-                </List.Section>
+                </>
               </View>
             )}
             <View>
               {subRedditSources.length > 0 && (
-                <List.Section key="subreddit-list-section">
-                  <List.Subheader
-                    key="subreddit-list-header"
-                    style={{ fontSize: fontSize.bodyLarge, fontWeight: 700 }}
-                  >
-                    <Text variant="titleMedium">SubReddit feeds</Text>
-                  </List.Subheader>
+                <>
+                  <Text variant="headlineMedium">Subreddit feeds</Text>
                   {subRedditSources.map((source, index) => (
-                    <React.Fragment key={source.id}>
-                      <List.Item
-                        title={source.name}
-                        titleStyle={{ fontSize: fontSize.bodyMedium, fontWeight: '500' }}
-                        left={() => <List.Icon icon="reddit" />}
-                        // Swapped onTouchEnd for onPress, and passed the current source!
-                        onPress={() => handleEditSource(source)}
-                      />
-
-                      {index !== rssSources.length - 1 && (
-                        <Divider style={{ backgroundColor: theme.colors.outlineVariant }} />
-                      )}
-                    </React.Fragment>
+                    <SourceCard
+                      key={index}
+                      source={source}
+                      icon="reddit"
+                      onPress={handleEditSource}
+                    />
                   ))}
-                </List.Section>
+                </>
               )}
             </View>
           </View>

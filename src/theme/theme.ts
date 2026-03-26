@@ -229,7 +229,7 @@ export const LightTheme: MD3Theme = {
     ...MD3LightTheme.colors,
     ...lightColors,
   },
-  roundness: shapes.extraLarge,
+  roundness: shapes.large,
 }
 
 export const DarkTheme: MD3Theme = {
@@ -238,7 +238,7 @@ export const DarkTheme: MD3Theme = {
     ...MD3DarkTheme.colors,
     ...darkColors,
   },
-  roundness: shapes.extraLarge,
+  roundness: shapes.large,
 }
 
 export type SystemM3Theme = ReturnType<typeof useMaterial3Theme>['theme']

@@ -10,6 +10,7 @@ import {
 
 import {
   Button,
+  Icon,
   MD3Theme,
   Modal,
   Portal,
@@ -24,16 +25,22 @@ import * as redditService from '../../parser/reddit-json'
 import * as articleService from '../../services/db/article'
 import * as sourceService from '../../services/db/source'
 import { fetchRSSFeed, quickFeedCheck } from '../../services/feed-service'
-import { shapes, spacing } from '../../theme/theme'
+import { fontSize, shapes, spacing } from '../../theme/theme'
 
 interface AddNewSourceProps {
   visible: boolean
   setVisible: React.Dispatch<React.SetStateAction<boolean>>
   onSourceAdded: () => void
+  selectedSourceType?: FeedType
 }
 
-const AddNewSource = ({ visible, setVisible, onSourceAdded }: AddNewSourceProps) => {
-  const [sourceType, setSourceType] = React.useState<FeedType>(FeedType.RSS)
+const AddNewSource = ({
+  visible,
+  setVisible,
+  selectedSourceType,
+  onSourceAdded,
+}: AddNewSourceProps) => {
+  const [sourceType, setSourceType] = React.useState<FeedType>(selectedSourceType ?? FeedType.RSS)
   const [source, setSource] = React.useState<string>('')
   const [sourceUrl, setSourceUrl] = React.useState<string>('')
   const [loading, setLoading] = React.useState<boolean>(false)
@@ -73,7 +80,7 @@ const AddNewSource = ({ visible, setVisible, onSourceAdded }: AddNewSourceProps)
 
       const newSource = sourceService.insertNew({
         id: cleanupInput(source),
-        name: sourceType === FeedType.SUB_REDDIT ? `r/${source}` : source,
+        name: source,
         type: finalType,
         url: sourceType === FeedType.SUB_REDDIT ? `r/${finalUrl}` : finalUrl,
       })
@@ -118,51 +125,63 @@ const AddNewSource = ({ visible, setVisible, onSourceAdded }: AddNewSourceProps)
               </Text>
 
               <View style={styles.formContainer}>
-                <SegmentedButtons
-                  value={sourceType}
-                  onValueChange={(val) => setSourceType(val as FeedType)}
-                  buttons={[
-                    {
-                      value: FeedType.RSS,
-                      label: 'RSS',
-                      icon: 'rss',
-                    },
-                    {
-                      value: FeedType.SUB_REDDIT,
-                      label: 'Subreddit',
-                      icon: 'reddit',
-                    },
-                  ]}
-                  style={styles.segmentedButtons}
-                />
+                {!selectedSourceType && (
+                  <SegmentedButtons
+                    value={sourceType}
+                    onValueChange={(val) => setSourceType(val as FeedType)}
+                    buttons={[
+                      {
+                        value: FeedType.RSS,
+                        label: 'RSS',
+                        icon: 'rss',
+                      },
+                      {
+                        value: FeedType.SUB_REDDIT,
+                        label: 'Subreddit',
+                        icon: 'reddit',
+                      },
+                    ]}
+                    style={styles.segmentedButtons}
+                  />
+                )}
 
-                <TextInput
-                  mode="outlined"
-                  textContentType="name"
-                  label="Give it a name"
-                  value={source}
-                  maxLength={15}
-                  onChangeText={(text) =>
-                    setSource(sourceType === FeedType.SUB_REDDIT ? cleanupInput(text) : text)
-                  }
-                  left={sourceType === FeedType.SUB_REDDIT ? <TextInput.Affix text="r/" /> : null}
-                  style={styles.input}
-                />
+                <View style={{ gap: 6 }}>
+                  <Text variant="labelMedium">NAME</Text>
+                  <TextInput
+                    mode="outlined"
+                    textContentType="name"
+                    // label="Give it a name"
+                    value={source}
+                    maxLength={15}
+                    onChangeText={(text) => setSource(text)}
+                    style={styles.input}
+                    placeholder={sourceType === FeedType.RSS ? 'The Verge' : 'Android'}
+                  />
+                </View>
 
-                <TextInput
-                  mode="outlined"
-                  textContentType="URL"
-                  label={sourceType === FeedType.RSS ? 'Feed URL' : 'Subreddit name'}
-                  value={sourceUrl}
-                  onChangeText={(text) => setSourceUrl(cleanupInput(text))}
-                  left={sourceType === FeedType.SUB_REDDIT ? <TextInput.Affix text="r/" /> : null}
-                  style={styles.input}
-                />
+                <View style={{ gap: 6 }}>
+                  <Text variant="labelMedium">
+                    {sourceType === FeedType.RSS ? 'URL' : 'Subreddit name'}
+                  </Text>
+                  <TextInput
+                    mode="outlined"
+                    textContentType="URL"
+                    value={sourceUrl}
+                    onChangeText={(text) => setSourceUrl(cleanupInput(text))}
+                    style={styles.input}
+                    placeholder={
+                      sourceType === FeedType.RSS
+                        ? 'https://www.theverge.com/rss/index.xml'
+                        : 'r/android'
+                    }
+                    multiline={sourceType === FeedType.RSS}
+                  />
+                </View>
               </View>
 
               <View style={styles.actionContainer}>
                 <Button onPress={handleDismiss} textColor={theme.colors.primary}>
-                  Cancel
+                  CANCEL
                 </Button>
                 <Button
                   mode="contained"
@@ -171,7 +190,26 @@ const AddNewSource = ({ visible, setVisible, onSourceAdded }: AddNewSourceProps)
                   loading={loading}
                   style={styles.addButton}
                 >
-                  Add
+                  <Text
+                    variant="labelLarge"
+                    style={{
+                      color:
+                        !source || !sourceUrl || loading
+                          ? theme.colors.primary
+                          : theme.colors.onPrimary,
+                    }}
+                  >
+                    ADD
+                  </Text>
+                  <Icon
+                    source="arrow-right"
+                    size={fontSize.labelLarge}
+                    color={
+                      !source || !sourceUrl || loading
+                        ? theme.colors.primary
+                        : theme.colors.onPrimary
+                    }
+                  />
                 </Button>
               </View>
             </View>
@@ -192,9 +230,9 @@ const makeStyles = (theme: MD3Theme) =>
       paddingTop: 80,
     },
     modalContainer: {
-      backgroundColor: theme.colors.surface,
+      backgroundColor: theme.colors.background,
       padding: spacing.xl,
-      borderRadius: shapes.extraLarge,
+      borderRadius: shapes.large,
     },
     title: {
       fontWeight: 'bold',
