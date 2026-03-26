@@ -9,7 +9,6 @@ import FeedFilter, { FilterValue } from '../components/FeedFilter'
 import { EmptyState } from '../components/Feeds/EmptyState'
 import { SectionHeader } from '../components/Feeds/SectionHeader'
 import { Snackbar } from '../components/Snackbar'
-import AddNewSource from '../components/modals/AddNewSource'
 import { Article } from '../database/schema/article'
 import { Source } from '../database/schema/source'
 import { useFeeds } from '../hooks/useFeeds'
@@ -23,16 +22,8 @@ interface FeedScreenProps {
 export default function FeedScreen({ isFocused }: FeedScreenProps) {
   const styles = makeStyles(useTheme<MD3Theme>())
   const [filter, setFilter] = useState<FilterValue>('all')
-  const {
-    sections,
-    isSyncing,
-    showSnackbar,
-    setShowSnackbar,
-    snackbarText,
-    syncWithNetwork,
-    refreshLocal,
-  } = useFeeds(filter, isFocused)
-  const [addNewSource, setAddNewSource] = useState<boolean>(false)
+  const { sections, isSyncing, showSnackbar, setShowSnackbar, snackbarText, syncWithNetwork } =
+    useFeeds(filter, isFocused)
   const { onScroll } = useScrollAnimation()
 
   const renderItem = useCallback(
@@ -52,12 +43,6 @@ export default function FeedScreen({ isFocused }: FeedScreenProps) {
           disabled={isSyncing}
           loading={isSyncing}
         />
-        <Appbar.Action
-          icon="plus"
-          onPress={() => {
-            setAddNewSource(!addNewSource)
-          }}
-        />
       </Appbar.Header>
 
       <Animated.SectionList
@@ -72,17 +57,13 @@ export default function FeedScreen({ isFocused }: FeedScreenProps) {
         renderSectionHeader={({ section: { title, source } }) => (
           <SectionHeader title={title} source={source} />
         )}
+        stickySectionHeadersEnabled={false}
         onScroll={onScroll}
         scrollEventThrottle={16}
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
         // ── Empty State ──
         ListEmptyComponent={<EmptyState filter={filter} />}
-      />
-      <AddNewSource
-        visible={addNewSource}
-        setVisible={setAddNewSource}
-        onSourceAdded={refreshLocal}
       />
       <Snackbar visible={showSnackbar} setVisible={setShowSnackbar} text={snackbarText} />
     </View>

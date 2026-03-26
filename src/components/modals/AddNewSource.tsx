@@ -8,48 +8,45 @@ import {
   View,
 } from 'react-native'
 
-import {
-  Button,
-  Icon,
-  MD3Theme,
-  Modal,
-  Portal,
-  SegmentedButtons,
-  Text,
-  TextInput,
-  useTheme,
-} from 'react-native-paper'
+import Slider from '@react-native-community/slider'
+import { Button, MD3Theme, Modal, Portal, Text, TextInput, useTheme } from 'react-native-paper'
 
 import { FeedType } from '../../config/feed-source'
+import { Source } from '../../database/schema/source'
 import * as redditService from '../../parser/reddit-json'
 import * as articleService from '../../services/db/article'
 import * as sourceService from '../../services/db/source'
 import { fetchRSSFeed, quickFeedCheck } from '../../services/feed-service'
-import { fontSize, shapes, spacing } from '../../theme/theme'
+import { shapes, spacing } from '../../theme/theme'
 
 interface AddNewSourceProps {
   visible: boolean
   setVisible: React.Dispatch<React.SetStateAction<boolean>>
-  onSourceAdded: () => void
-  selectedSourceType?: FeedType
+  preferredType: FeedType
+  appendNewSource: (source: Source) => void
 }
 
 const AddNewSource = ({
   visible,
   setVisible,
-  selectedSourceType,
-  onSourceAdded,
+  preferredType,
+  appendNewSource,
 }: AddNewSourceProps) => {
-  const [sourceType, setSourceType] = React.useState<FeedType>(selectedSourceType ?? FeedType.RSS)
+  const [sourceType, setSourceType] = React.useState<FeedType>(preferredType)
   const [source, setSource] = React.useState<string>('')
   const [sourceUrl, setSourceUrl] = React.useState<string>('')
+  const [sliding, setSliding] = React.useState<boolean>(false)
+  const [qty, setQty] = React.useState<number>(3)
   const [loading, setLoading] = React.useState<boolean>(false)
   const theme = useTheme<MD3Theme>()
+
+  React.useEffect(() => {
+    setSourceType(preferredType)
+  }, [preferredType])
 
   const cleanupInput = (text: string): string => text.trim().toLowerCase()
 
   const resetStates = () => {
-    setSourceType(FeedType.RSS)
     setSource('')
     setSourceUrl('')
     setLoading(false)
@@ -83,6 +80,7 @@ const AddNewSource = ({
         name: source,
         type: finalType,
         url: sourceType === FeedType.SUB_REDDIT ? `r/${finalUrl}` : finalUrl,
+        qty,
       })
 
       if (finalType === FeedType.RSS) {
@@ -90,8 +88,7 @@ const AddNewSource = ({
       } else {
         articleService.save(await redditService.fetchPosts(newSource))
       }
-
-      onSourceAdded() // Call success callback
+      appendNewSource(newSource)
       handleDismiss() // Close and reset
     } catch (error) {
       console.log(error)
@@ -125,26 +122,6 @@ const AddNewSource = ({
               </Text>
 
               <View style={styles.formContainer}>
-                {!selectedSourceType && (
-                  <SegmentedButtons
-                    value={sourceType}
-                    onValueChange={(val) => setSourceType(val as FeedType)}
-                    buttons={[
-                      {
-                        value: FeedType.RSS,
-                        label: 'RSS',
-                        icon: 'rss',
-                      },
-                      {
-                        value: FeedType.SUB_REDDIT,
-                        label: 'Subreddit',
-                        icon: 'reddit',
-                      },
-                    ]}
-                    style={styles.segmentedButtons}
-                  />
-                )}
-
                 <View style={{ gap: 6 }}>
                   <Text variant="labelMedium">NAME</Text>
                   <TextInput
@@ -177,11 +154,34 @@ const AddNewSource = ({
                     multiline={sourceType === FeedType.RSS}
                   />
                 </View>
+                <View style={{ gap: 6 }}>
+                  <Text variant="labelMedium">
+                    POSTS ON HOMESCREEN:{' '}
+                    <Text variant="labelLarge">{sliding ? 'STOP SLIDING!' : qty}</Text>
+                  </Text>
+                  <View style={{ paddingBottom: spacing.lg }}>
+                    <Slider
+                      value={qty}
+                      minimumValue={0}
+                      lowerLimit={1}
+                      maximumValue={5}
+                      step={1}
+                      minimumTrackTintColor={theme.colors.primary}
+                      maximumTrackTintColor={theme.colors.surfaceVariant}
+                      thumbTintColor={theme.colors.primary}
+                      onSlidingStart={() => setSliding(true)}
+                      onSlidingComplete={(value) => {
+                        setSliding(false)
+                        setQty(value)
+                      }}
+                    />
+                  </View>
+                </View>
               </View>
 
               <View style={styles.actionContainer}>
                 <Button onPress={handleDismiss} textColor={theme.colors.primary}>
-                  CANCEL
+                  Cancel
                 </Button>
                 <Button
                   mode="contained"
@@ -189,27 +189,10 @@ const AddNewSource = ({
                   disabled={!source || !sourceUrl || loading}
                   loading={loading}
                   style={styles.addButton}
+                  icon="arrow-right"
+                  contentStyle={{ flexDirection: 'row-reverse', justifyContent: 'center' }}
                 >
-                  <Text
-                    variant="labelLarge"
-                    style={{
-                      color:
-                        !source || !sourceUrl || loading
-                          ? theme.colors.primary
-                          : theme.colors.onPrimary,
-                    }}
-                  >
-                    ADD
-                  </Text>
-                  <Icon
-                    source="arrow-right"
-                    size={fontSize.labelLarge}
-                    color={
-                      !source || !sourceUrl || loading
-                        ? theme.colors.primary
-                        : theme.colors.onPrimary
-                    }
-                  />
+                  Add Source
                 </Button>
               </View>
             </View>
@@ -227,7 +210,7 @@ const makeStyles = (theme: MD3Theme) =>
     modalOverlay: {
       paddingHorizontal: spacing.lg,
       justifyContent: 'flex-start',
-      paddingTop: 80,
+      paddingTop: 70,
     },
     modalContainer: {
       backgroundColor: theme.colors.background,
@@ -240,18 +223,19 @@ const makeStyles = (theme: MD3Theme) =>
       marginBottom: spacing.lg,
     },
     formContainer: {
-      // Replaced 'gap' with standard margin-bottom on children for better RN support
+      gap: 10,
     },
     segmentedButtons: {
       marginBottom: spacing.md,
     },
     input: {
       marginBottom: spacing.md,
-      backgroundColor: theme.colors.surface, // Ensures background matches modal
+      backgroundColor: theme.colors.surfaceVariant, // Ensures background matches modal
     },
     actionContainer: {
       flexDirection: 'row',
-      justifyContent: 'flex-end',
+      justifyContent: 'space-between',
+      alignItems: 'center',
       marginTop: spacing.sm,
     },
     addButton: {

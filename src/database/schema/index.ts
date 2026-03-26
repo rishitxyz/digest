@@ -37,6 +37,7 @@ export function initializeDatabase() {
       url TEXT NOT NULL UNIQUE,  -- Added UNIQUE
       type TEXT CHECK(type IN ('rss', 'subreddit')) NOT NULL,
       showOnFeed INTEGER DEFAULT 1 NOT NULL,
+      qty INTEGER DEFAULT 3 NOT NULL,
       createdAt TEXT DEFAULT CURRENT_TIMESTAMP NOT NULL
     );
 

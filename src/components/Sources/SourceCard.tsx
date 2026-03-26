@@ -5,16 +5,23 @@ import { Avatar, Card, useTheme } from 'react-native-paper'
 import { IconSource } from 'react-native-paper/lib/typescript/components/Icon'
 
 import { Source } from '../../database/schema/source'
+import { deleteById } from '../../services/db/source'
 import { fontSize, shapes, spacing } from '../../theme/theme'
 
 interface SourceCardProps {
   source: Source
   icon: IconSource
-  onPress: (source: Source) => void
+  editing: boolean
+  onDeleteSource: () => void
 }
 
-export const SourceCard = ({ source, icon, onPress }: SourceCardProps) => {
+export const SourceCard = ({ source, icon, editing = false, onDeleteSource }: SourceCardProps) => {
   const theme = useTheme()
+
+  const handleDeleteSource = (id: string) => {
+    deleteById(id)
+    onDeleteSource()
+  }
 
   return (
     <Card
@@ -26,14 +33,22 @@ export const SourceCard = ({ source, icon, onPress }: SourceCardProps) => {
           backgroundColor: theme.colors.surfaceVariant, // The soft off-white background
         },
       ]}
-      onPress={() => onPress(source)}
     >
       <Card.Title
         title={source.name}
         subtitle={source.url.replace('https://', '')}
         // 2. Pass an Avatar component to the 'left' prop
         left={(props) => (
-          <Avatar.Icon {...props} size={48} icon={icon} style={{ borderRadius: shapes.large }} />
+          <Avatar.Icon
+            {...props}
+            size={48}
+            icon={!editing ? icon : 'minus-thick'}
+            style={{
+              borderRadius: shapes.large,
+              backgroundColor: !editing ? theme.colors.primary : theme.colors.error,
+            }}
+            onTouchEnd={() => handleDeleteSource(source.id)}
+          />
         )}
         titleStyle={[
           styles.title,

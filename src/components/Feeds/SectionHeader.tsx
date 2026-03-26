@@ -3,7 +3,7 @@ import { StyleSheet, View } from 'react-native'
 
 import { useNavigation } from '@react-navigation/native'
 import { NativeStackNavigationProp } from '@react-navigation/native-stack'
-import { IconButton, MD3Theme, Text, useTheme } from 'react-native-paper'
+import { Button, Icon, IconButton, MD3Theme, Text, useTheme } from 'react-native-paper'
 
 import { FeedType } from '../../config/feed-source'
 import { Source } from '../../database/schema/source'
@@ -27,15 +27,10 @@ export const SectionHeader = ({ title, source }: SectionHeaderProps) => {
 
   return (
     <View style={styles.sectionHeader}>
-      <Text variant="titleLarge" style={styles.sectionTitle}>
+      <Text variant="headlineSmall" style={styles.sectionTitle}>
         {source.type === FeedType.SUB_REDDIT ? source.url : title}
       </Text>
-      <IconButton
-        icon="arrow-right-thick"
-        size={12}
-        animated
-        onPress={() => handleHeadingPress(source)}
-      />
+      <IconButton icon="arrow-right-circle" animated onPress={() => handleHeadingPress(source)} />
     </View>
   )
 }

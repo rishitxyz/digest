@@ -1,12 +1,20 @@
 import React, { useState } from 'react'
 import { ScrollView, StyleSheet, View } from 'react-native'
 
-import { ActivityIndicator, Appbar, IconButton, MD3Theme, Text, useTheme } from 'react-native-paper'
+import {
+  ActivityIndicator,
+  Appbar,
+  Icon,
+  IconButton,
+  MD3Theme,
+  Text,
+  useTheme,
+} from 'react-native-paper'
 
 import { SourceCard } from '../components/Sources/SourceCard'
-import EditSource from '../components/modals/EditSource'
-import { Source } from '../database/schema/source'
-import * as sourceService from '../services/db/source'
+import AddNewSource from '../components/modals/AddNewSource'
+import { FeedType } from '../config/feed-source'
+import { useSources } from '../hooks/useSources'
 import { fontSize, shapes, spacing } from '../theme/theme'
 
 interface SourcesListProps {
@@ -14,34 +22,25 @@ interface SourcesListProps {
 }
 
 export default function SourcesList({ isFocused }: SourcesListProps) {
-  const [sources, setSources] = useState<{ rss: Source[]; subreddits: Source[] }>({
-    rss: [],
-    subreddits: [],
-  })
+  const { rssSources, redditSources, fetchAllSources, appendNewSource, deleteSource } = useSources()
   const [loading, setLoading] = useState<boolean>(false)
-
-  // Track the ACTUAL source the user clicked on, not just a true/false boolean
-  const [selectedSource, setSelectedSource] = useState<Source | null>(null)
+  const [editing, setEditing] = useState<boolean>(false)
+  const [addNewSource, setAddNewSource] = useState<boolean>(false)
+  const [preferredType, setPreferredType] = useState<FeedType>(FeedType.RSS)
 
   const theme = useTheme<MD3Theme>()
 
   React.useEffect(() => {
     if (isFocused) {
       setLoading(true)
-      const { rss, subreddits } = sourceService.getAllSources()
-      setSources({ rss, subreddits })
+      fetchAllSources()
       setLoading(false)
     }
   }, [isFocused])
 
-  // Pass the specific source when clicked
-  const handleEditSource = (source: Source) => {
-    setSelectedSource(source)
-  }
-
-  // Handle closing the modal by clearing the selected source
-  const handleCloseModal = () => {
-    setSelectedSource(null)
+  const handleOpenModal = (feedType: FeedType) => {
+    setPreferredType(feedType)
+    setAddNewSource(true)
   }
 
   return (
@@ -55,6 +54,12 @@ export default function SourcesList({ isFocused }: SourcesListProps) {
             color: theme.colors.onSurface,
           }}
         />
+        <Appbar.Action
+          icon={({ size, color }) => (
+            <Icon source={!editing ? 'pencil' : 'check'} size={size} color={color} />
+          )}
+          onPress={() => setEditing(!editing)}
+        />
       </Appbar.Header>
 
       <ScrollView contentContainerStyle={styles.scrollContent} showsVerticalScrollIndicator={false}>
@@ -62,49 +67,63 @@ export default function SourcesList({ isFocused }: SourcesListProps) {
           <ActivityIndicator animating={true} color={theme.colors.primary} />
         ) : (
           <View>
-            {sources.rss.length > 0 && (
+            <View style={{ marginVertical: spacing.lg }}>
+              <View style={styles.sourceHeading}>
+                <Text variant="headlineMedium">RSS feeds</Text>
+                <IconButton
+                  animated
+                  icon="plus-circle"
+                  iconColor={theme.colors.primary}
+                  onPress={() => handleOpenModal(FeedType.RSS)}
+                  disabled={editing}
+                />
+              </View>
+              {rssSources.map((source, index) => (
+                <SourceCard
+                  key={index}
+                  source={source}
+                  icon="rss"
+                  editing={editing}
+                  onDeleteSource={() => deleteSource(source)}
+                />
+              ))}
+              {rssSources.length === 0 && <Text variant="bodyLarge">Try adding a new one!</Text>}
+            </View>
+            <View>
               <View style={{ marginVertical: spacing.lg }}>
                 <View style={styles.sourceHeading}>
-                  <Text variant="headlineMedium">RSS feeds</Text>
-                  <IconButton icon="plus-circle" />
+                  <Text variant="headlineMedium">Subreddit feeds</Text>
+                  <IconButton
+                    animated
+                    icon="plus-circle"
+                    iconColor={theme.colors.primary}
+                    onPress={() => handleOpenModal(FeedType.SUB_REDDIT)}
+                    disabled={editing}
+                  />
                 </View>
-                {sources.rss.map((source, index) => (
-                  <SourceCard key={index} source={source} icon="rss" onPress={handleEditSource} />
+                {redditSources.map((source, index) => (
+                  <SourceCard
+                    key={index}
+                    source={source}
+                    icon="reddit"
+                    editing={editing}
+                    onDeleteSource={() => deleteSource(source)}
+                  />
                 ))}
+                {redditSources.length === 0 && (
+                  <Text variant="bodyLarge">Try adding a new one!</Text>
+                )}
               </View>
-            )}
-            <View>
-              {sources.subreddits.length > 0 && (
-                <View style={{ marginVertical: spacing.lg }}>
-                  <View style={styles.sourceHeading}>
-                    <Text variant="headlineMedium">Subreddit feeds</Text>
-                    <IconButton icon="plus-circle" />
-                  </View>
-                  {sources.subreddits.map((source, index) => (
-                    <SourceCard
-                      key={index}
-                      source={source}
-                      icon="reddit"
-                      onPress={handleEditSource}
-                    />
-                  ))}
-                </View>
-              )}
             </View>
           </View>
         )}
       </ScrollView>
-
-      {/* Render ONE single modal down here, outside the ScrollView entirely.
-        It only shows up if selectedSource is NOT null.
-      */}
-      {selectedSource && (
-        <EditSource
-          source={selectedSource}
-          visible={!!selectedSource} // true if selectedSource exists
-          setVisible={handleCloseModal} // pass the close handler
-        />
-      )}
+      <AddNewSource
+        visible={addNewSource}
+        setVisible={setAddNewSource}
+        preferredType={preferredType}
+        appendNewSource={appendNewSource}
+      />
     </View>
   )
 }

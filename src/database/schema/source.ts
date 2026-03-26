@@ -11,6 +11,7 @@ export const SourceTable = sqliteTable('source', {
   url: text('url').notNull().unique(),
   type: text('type', { enum: [FeedType.RSS, FeedType.SUB_REDDIT] }).notNull(),
   showOnFeed: integer('showOnFeed', { mode: 'boolean' }).default(true).notNull(),
+  qty: integer('qty').default(3).notNull(),
   createdAt: text('createdAt').default('CURRENT_TIMESTAMP').notNull(),
 })
 
