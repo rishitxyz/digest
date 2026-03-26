@@ -22,9 +22,9 @@ export const toggleShowOnFeed = (id: string, showOnFeed: boolean) => {
   return readById(id)
 }
 
-export const getAllSources = (): { subReddits: Source[]; rss: Source[] } => {
+export const getAllSources = (): { rss: Source[]; subreddits: Source[] } => {
   return {
-    subReddits: db
+    subreddits: db
       .select()
       .from(SourceTable)
       .where(eq(SourceTable.type, FeedType.SUB_REDDIT))

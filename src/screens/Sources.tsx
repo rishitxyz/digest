@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { ScrollView, StyleSheet, View } from 'react-native'
 
-import { ActivityIndicator, Appbar, MD3Theme, Text, useTheme } from 'react-native-paper'
+import { ActivityIndicator, Appbar, IconButton, MD3Theme, Text, useTheme } from 'react-native-paper'
 
 import { SourceCard } from '../components/Sources/SourceCard'
 import EditSource from '../components/modals/EditSource'
@@ -14,8 +14,10 @@ interface SourcesListProps {
 }
 
 export default function SourcesList({ isFocused }: SourcesListProps) {
-  const [rssSources, setRssSources] = useState<Source[]>([])
-  const [subRedditSources, setSubRedditSources] = useState<Source[]>([])
+  const [sources, setSources] = useState<{ rss: Source[]; subreddits: Source[] }>({
+    rss: [],
+    subreddits: [],
+  })
   const [loading, setLoading] = useState<boolean>(false)
 
   // Track the ACTUAL source the user clicked on, not just a true/false boolean
@@ -26,9 +28,8 @@ export default function SourcesList({ isFocused }: SourcesListProps) {
   React.useEffect(() => {
     if (isFocused) {
       setLoading(true)
-      const sources = sourceService.getAllSources()
-      setRssSources(sources.rss)
-      setSubRedditSources(sources.subReddits)
+      const { rss, subreddits } = sourceService.getAllSources()
+      setSources({ rss, subreddits })
       setLoading(false)
     }
   }, [isFocused])
@@ -61,21 +62,25 @@ export default function SourcesList({ isFocused }: SourcesListProps) {
           <ActivityIndicator animating={true} color={theme.colors.primary} />
         ) : (
           <View>
-            {rssSources.length > 0 && (
-              <View key="rss-view" style={{ marginVertical: spacing.lg }}>
-                <>
+            {sources.rss.length > 0 && (
+              <View style={{ marginVertical: spacing.lg }}>
+                <View style={styles.sourceHeading}>
                   <Text variant="headlineMedium">RSS feeds</Text>
-                  {rssSources.map((source, index) => (
-                    <SourceCard key={index} source={source} icon="rss" onPress={handleEditSource} />
-                  ))}
-                </>
+                  <IconButton icon="plus-circle" />
+                </View>
+                {sources.rss.map((source, index) => (
+                  <SourceCard key={index} source={source} icon="rss" onPress={handleEditSource} />
+                ))}
               </View>
             )}
             <View>
-              {subRedditSources.length > 0 && (
-                <>
-                  <Text variant="headlineMedium">Subreddit feeds</Text>
-                  {subRedditSources.map((source, index) => (
+              {sources.subreddits.length > 0 && (
+                <View style={{ marginVertical: spacing.lg }}>
+                  <View style={styles.sourceHeading}>
+                    <Text variant="headlineMedium">Subreddit feeds</Text>
+                    <IconButton icon="plus-circle" />
+                  </View>
+                  {sources.subreddits.map((source, index) => (
                     <SourceCard
                       key={index}
                       source={source}
@@ -83,7 +88,7 @@ export default function SourcesList({ isFocused }: SourcesListProps) {
                       onPress={handleEditSource}
                     />
                   ))}
-                </>
+                </View>
               )}
             </View>
           </View>
@@ -105,6 +110,12 @@ export default function SourcesList({ isFocused }: SourcesListProps) {
 }
 
 const styles = StyleSheet.create({
+  sourceHeading: {
+    flex: 1,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
   container: {
     flex: 1,
   },
