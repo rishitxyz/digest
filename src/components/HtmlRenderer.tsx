@@ -60,8 +60,8 @@ export const HtmlRenderer = ({
       tagsStyles={{
         body: {
           color: theme.colors.onSurfaceVariant,
-          fontSize: 14,
-          lineHeight: 24,
+          fontSize: 20,
+          lineHeight: 26,
           fontFamily: theme.fonts.bodyMedium.fontFamily,
         },
         a: {

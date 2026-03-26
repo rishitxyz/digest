@@ -8,19 +8,19 @@ export type Route = {
 export const routes: Route[] = [
   {
     key: 'feeds',
-    title: 'Feeds',
+    title: 'FEEDS',
     focusedIcon: 'rss',
     unfocusedIcon: 'rss',
   },
   {
     key: 'sources',
-    title: 'Sources',
+    title: 'SOURCES',
     focusedIcon: 'list-box',
     unfocusedIcon: 'list-box-outline',
   },
   {
     key: 'settings',
-    title: 'Settings',
+    title: 'SETTINGS',
     focusedIcon: 'cog',
     unfocusedIcon: 'cog-outline',
   },

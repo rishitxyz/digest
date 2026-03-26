@@ -75,7 +75,7 @@ export default function SourcesList({ isFocused }: SourcesListProps) {
                     key="rss-list-header"
                     style={{ fontSize: fontSize.bodyLarge, fontWeight: 700 }}
                   >
-                    <Text>RSS feeds</Text>
+                    <Text variant="titleMedium">RSS feeds</Text>
                   </List.Subheader>
                   {rssSources.map((source, index) => (
                     <React.Fragment key={source.id}>
@@ -102,7 +102,7 @@ export default function SourcesList({ isFocused }: SourcesListProps) {
                     key="subreddit-list-header"
                     style={{ fontSize: fontSize.bodyLarge, fontWeight: 700 }}
                   >
-                    <Text>SubReddit feeds</Text>
+                    <Text variant="titleMedium">SubReddit feeds</Text>
                   </List.Subheader>
                   {subRedditSources.map((source, index) => (
                     <React.Fragment key={source.id}>

@@ -34,8 +34,8 @@ export const CommentThread = ({ comment, depth = 0, theme }: CommentThreadProps)
               justifyContent: 'space-between',
             }}
           >
-            <Text>u/{comment.author}</Text>
-            <Text style={{ fontWeight: '500' }}>
+            <Text variant="bodyMedium">u/{comment.author}</Text>
+            <Text variant="bodyMedium">
               {comment.score}
               <Icon source="arrow-up-bold" color={theme.colors.primary} size={15} />
             </Text>
@@ -44,7 +44,10 @@ export const CommentThread = ({ comment, depth = 0, theme }: CommentThreadProps)
         description={
           <MarkdownText
             markdown={comment.body}
-            markdownStyle={{ paragraph: { fontSize: 13 }, list: { fontSize: 13 } }}
+            markdownStyle={{
+              paragraph: { fontSize: fontSize.bodyMedium },
+              list: { fontSize: fontSize.bodyMedium },
+            }}
           />
         }
         descriptionNumberOfLines={0}

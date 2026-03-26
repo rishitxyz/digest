@@ -6,7 +6,7 @@ import { StatusBar } from 'expo-status-bar'
 
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { BottomNavigation, PaperProvider, useTheme } from 'react-native-paper'
+import { BottomNavigation, PaperProvider, Text, useTheme } from 'react-native-paper'
 import type { MD3Theme } from 'react-native-paper'
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 
@@ -21,7 +21,7 @@ import FeedScreen from './src/screens/Feeds'
 import RedditPost from './src/screens/RedditPost'
 import Settings from './src/screens/Settings'
 import SourcesList from './src/screens/Sources'
-import { getAppTheme } from './src/theme/theme'
+import { getAppTheme, spacing } from './src/theme/theme'
 
 initializeDatabase()
 
@@ -79,19 +79,15 @@ function AppContent({
     >
       <StatusBar style={isDarkMode ? 'light' : 'dark'} />
       <BottomNavigation
+        shifting
         navigationState={{ index, routes }}
         onIndexChange={setIndex}
         renderScene={renderScene}
-        barStyle={
-          {
-            // backgroundColor: theme.colors.elevation.level2,
-          }
-        }
+        renderLabel={({ route }) => <Text style={{ marginTop: spacing.xs, textAlign: 'center', color: theme.colors.primary, fontFamily: theme.fonts.labelLarge.fontFamily }}>{route.title}</Text>}
         activeColor={theme.colors.primary}
         inactiveColor={theme.colors.onSurfaceVariant}
         activeIndicatorStyle={{
           backgroundColor: theme.colors.secondaryContainer,
-          // borderRadius: 9999,
         }}
         theme={theme}
       />

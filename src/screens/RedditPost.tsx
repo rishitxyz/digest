@@ -14,7 +14,7 @@ import { Article } from '../database/schema/article'
 import { RootStackParamList } from '../navigation/types'
 import { REDDIT_BASE_URL, fetchComments } from '../parser/reddit-json'
 import * as articleService from '../services/db/article'
-import { shapes, spacing } from '../theme/theme'
+import { fontSize, shapes, spacing } from '../theme/theme'
 import { Comment } from '../types/comment'
 import { getRelativeTime } from '../utils/date'
 
@@ -156,7 +156,11 @@ export default function RedditPost({ route, navigation }: Props) {
 
           <View>
             <Text
-              style={{ marginVertical: spacing.md, color: theme.colors.primary, fontWeight: '600' }}
+              style={{
+                marginVertical: spacing.md,
+                color: theme.colors.primary,
+                fontFamily: theme.fonts.titleLarge.fontFamily,
+              }}
             >
               Comments
             </Text>
