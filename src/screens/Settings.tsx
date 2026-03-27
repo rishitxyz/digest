@@ -1,7 +1,7 @@
 import React, { useState } from 'react'
 import { ScrollView, StyleSheet, View } from 'react-native'
 
-import { Appbar, Button, Divider, List, Menu, Switch, useTheme } from 'react-native-paper'
+import { Appbar, Button, Divider, List, Menu, Switch, Text, useTheme } from 'react-native-paper'
 import type { MD3Theme } from 'react-native-paper'
 
 import { fontOptions, fontOptionsType } from '../hooks/useAppFonts'
@@ -48,13 +48,15 @@ export default function Settings({
       <ScrollView showsVerticalScrollIndicator={false}>
         {/* Appearance Section */}
         <List.Section>
-          <List.Subheader style={{ color: theme.colors.primary, fontWeight: '600' }}>
-            Appearance
+          <List.Subheader>
+            <Text variant="titleSmall" style={{ color: theme.colors.primary }}>
+              APPEARANCE
+            </Text>
           </List.Subheader>
 
           <List.Item
-            title="Dark Mode"
-            description="Use dark theme throughout the app"
+            title={() => <Text variant="bodyLarge">Dark Mode</Text>}
+            description={() => <Text variant="bodyMedium">Use dark theme throughout the app.</Text>}
             left={(props) => (
               <List.Icon {...props} icon="weather-night" color={theme.colors.primary} />
             )}
@@ -65,8 +67,6 @@ export default function Settings({
                 color={theme.colors.primary}
               />
             )}
-            titleStyle={{ color: theme.colors.onSurface }}
-            descriptionStyle={{ color: theme.colors.onSurfaceVariant }}
           />
 
           <Divider style={{ backgroundColor: theme.colors.outlineVariant }} />
@@ -74,38 +74,15 @@ export default function Settings({
 
         {/* Feed Settings */}
         <List.Section>
-          <List.Subheader style={{ color: theme.colors.primary, fontWeight: '600' }}>
-            Feed Settings
+          <List.Subheader>
+            <Text variant="titleSmall" style={{ color: theme.colors.primary }}>
+              FEEDS
+            </Text>
           </List.Subheader>
 
           <List.Item
-            title="Auto-refresh"
-            description="Update feeds every 30 minutes"
-            left={(props) => (
-              <List.Icon {...props} icon="refresh-auto" color={theme.colors.secondary} />
-            )}
-            right={() => <Switch value={true} color={theme.colors.primary} />}
-            titleStyle={{ color: theme.colors.onSurface }}
-            descriptionStyle={{ color: theme.colors.onSurfaceVariant }}
-          />
-
-          <Divider style={{ backgroundColor: theme.colors.outlineVariant }} />
-
-          <List.Item
-            title="Show Images"
-            description="Display article preview images"
-            left={(props) => (
-              <List.Icon {...props} icon="image-outline" color={theme.colors.secondary} />
-            )}
-            right={() => <Switch value={true} color={theme.colors.primary} />}
-            titleStyle={{ color: theme.colors.onSurface }}
-            descriptionStyle={{ color: theme.colors.onSurfaceVariant }}
-          />
-          <Divider style={{ backgroundColor: theme.colors.outlineVariant }} />
-
-          <List.Item
-            title="Change display font"
-            description="Font for app display"
+            title={() => <Text variant="bodyLarge">Change display font</Text>}
+            description={() => <Text variant="bodyMedium">Font for app display</Text>}
             left={(props) => (
               <List.Icon {...props} icon="format-font" color={theme.colors.secondary} />
             )}
@@ -113,7 +90,9 @@ export default function Settings({
               <Menu
                 visible={openFontMenu}
                 onDismiss={() => setOpenFontMenu(false)}
-                anchor={<Button onPress={() => setOpenFontMenu(true)}>{currentFont}</Button>}
+                anchor={
+                  <Button onPress={() => setOpenFontMenu(true)}>{currentFont.toLowerCase()}</Button>
+                }
               >
                 {Object.values(fontOptions).map(({ displayName, value }, index) => (
                   <Menu.Item
@@ -123,6 +102,7 @@ export default function Settings({
                       onChangeFont(value as fontOptionsType)
                       setOpenFontMenu(false)
                     }}
+                    titleStyle={{ textTransform: 'lowercase' }}
                   />
                 ))}
               </Menu>
@@ -132,8 +112,8 @@ export default function Settings({
           <Divider style={{ backgroundColor: theme.colors.outlineVariant }} />
 
           <List.Item
-            title="Export user data"
-            description="Export local SQLite db file"
+            title={() => <Text variant="bodyLarge">Export user data</Text>}
+            description={() => <Text variant="bodyMedium">Export local SQLite db file</Text>}
             left={(props) => <List.Icon {...props} icon="export" color={theme.colors.secondary} />}
             right={() => <List.Icon icon="download-outline" color={theme.colors.primary} />}
             titleStyle={{ color: theme.colors.onSurface }}
@@ -141,8 +121,8 @@ export default function Settings({
             onTouchEnd={exportDb}
           />
           <List.Item
-            title="Delete user data"
-            description="Delete all articles & sources"
+            title={() => <Text variant="bodyLarge">Delete user data</Text>}
+            description={() => <Text variant="bodyMedium">Delete all articles & sources</Text>}
             left={(props) => (
               <List.Icon {...props} icon="alert-circle-outline" color={theme.colors.secondary} />
             )}
@@ -157,13 +137,15 @@ export default function Settings({
 
         {/* About */}
         <List.Section>
-          <List.Subheader style={{ color: theme.colors.primary, fontWeight: '600' }}>
-            About
+          <List.Subheader>
+            <Text variant="titleSmall" style={{ color: theme.colors.primary }}>
+              ABOUT
+            </Text>
           </List.Subheader>
 
           <List.Item
-            title="Version"
-            description="1.0.0 — Built with Expo & M3 Expressive"
+            title={() => <Text variant="bodyLarge">Version</Text>}
+            description={() => <Text variant="bodyMedium">1.0.0</Text>}
             left={(props) => (
               <List.Icon {...props} icon="information-outline" color={theme.colors.tertiary} />
             )}
