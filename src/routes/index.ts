@@ -9,8 +9,8 @@ export const routes: Route[] = [
   {
     key: 'feeds',
     title: 'FEEDS',
-    focusedIcon: 'rss',
-    unfocusedIcon: 'rss',
+    focusedIcon: 'compass',
+    unfocusedIcon: 'compass-outline',
   },
   {
     key: 'sources',

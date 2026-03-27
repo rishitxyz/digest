@@ -36,7 +36,7 @@ export default function FeedScreen({ isFocused }: FeedScreenProps) {
   return (
     <View style={styles.container}>
       <Appbar.Header elevated style={styles.header}>
-        <Appbar.Content title="ReadIt" style={styles.content} titleStyle={styles.contentTitle} />
+        <Appbar.Content title="Digest" style={styles.content} titleStyle={styles.contentTitle} />
         <Appbar.Action
           icon={({ size, color }) => <Icon source="progress-download" size={size} color={color} />}
           onPress={syncWithNetwork}
@@ -84,6 +84,7 @@ const makeStyles = (theme: MD3Theme) =>
       fontWeight: '700',
       fontSize: fontSize.headlineSmall,
       color: theme.colors.onSurface,
+      marginLeft: spacing.lg,
     },
     listHeader: { marginBottom: spacing.sm, paddingTop: spacing.sm },
     listContent: {

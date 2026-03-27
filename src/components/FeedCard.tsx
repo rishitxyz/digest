@@ -50,7 +50,7 @@ export default function FeedCard({ source, article }: FeedCardProps) {
       <View
         style={[
           styles.imageContainer,
-          { borderTopLeftRadius: shapes.extraLarge, borderTopRightRadius: shapes.extraLarge },
+          { borderTopLeftRadius: shapes.large, borderTopRightRadius: shapes.large },
         ]}
       >
         {article.imageUrl && (

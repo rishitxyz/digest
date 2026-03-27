@@ -1,3 +1,5 @@
+import { Linking } from 'react-native'
+
 import { EnrichedMarkdownText, MarkdownStyle } from 'react-native-enriched-markdown'
 import { useTheme } from 'react-native-paper'
 import type { MD3Theme } from 'react-native-paper'
@@ -53,5 +55,12 @@ export const MarkdownText = ({ markdown, markdownStyle = {} }: MarkdownTextProps
     }
   })
 
-  return <EnrichedMarkdownText markdown={markdown} allowFontScaling markdownStyle={finalStyle} />
+  return (
+    <EnrichedMarkdownText
+      flavor="github"
+      markdown={markdown}
+      markdownStyle={finalStyle}
+      onLinkPress={({ url }) => Linking.openURL(url)}
+    />
+  )
 }

@@ -14,7 +14,7 @@ import { Article } from '../database/schema/article'
 import { RootStackParamList } from '../navigation/types'
 import { REDDIT_BASE_URL, fetchComments } from '../parser/reddit-json'
 import * as articleService from '../services/db/article'
-import { fontSize, shapes, spacing } from '../theme/theme'
+import { shapes, spacing } from '../theme/theme'
 import { Comment } from '../types/comment'
 import { getRelativeTime } from '../utils/date'
 
