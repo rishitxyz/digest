@@ -54,6 +54,7 @@ export const quickFeedCheck = async (url: string): Promise<SourceValidationError
   try {
     const text = await response.text()
     const xmlObj = parseXMLFeed(text, 'source_id', 'source_name')
+    console.log('xmlObj: ', xmlObj)
 
     // Added rdf:RDF to catch RSS 1.0 feeds
     if (xmlObj.length > 0) return { isValid: true, type: FeedType.RSS, finalUrl: cleanUrl }

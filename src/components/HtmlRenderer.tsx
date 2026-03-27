@@ -88,6 +88,7 @@ export const HtmlRenderer = ({
         ...tagsStyle,
       }}
       renderers={renderers}
+      ignoredDomTags={['iframe']}
     />
   )
 }

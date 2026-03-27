@@ -83,7 +83,18 @@ function AppContent({
         navigationState={{ index, routes }}
         onIndexChange={setIndex}
         renderScene={renderScene}
-        renderLabel={({ route }) => <Text style={{ marginTop: spacing.xs, textAlign: 'center', color: theme.colors.primary, fontFamily: theme.fonts.labelLarge.fontFamily }}>{route.title}</Text>}
+        renderLabel={({ route }) => (
+          <Text
+            style={{
+              marginTop: spacing.xs,
+              textAlign: 'center',
+              color: theme.colors.primary,
+              fontFamily: theme.fonts.labelSmall.fontFamily,
+            }}
+          >
+            {route.title}
+          </Text>
+        )}
         activeColor={theme.colors.primary}
         inactiveColor={theme.colors.onSurfaceVariant}
         activeIndicatorStyle={{
