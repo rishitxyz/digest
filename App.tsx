@@ -6,7 +6,7 @@ import { StatusBar } from 'expo-status-bar'
 
 import { NavigationContainer } from '@react-navigation/native'
 import { createNativeStackNavigator } from '@react-navigation/native-stack'
-import { BottomNavigation, PaperProvider, Text, useTheme } from 'react-native-paper'
+import { BottomNavigation, PaperProvider, useTheme } from 'react-native-paper'
 import type { MD3Theme } from 'react-native-paper'
 import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 
@@ -21,7 +21,7 @@ import FeedScreen from './src/screens/Feeds'
 import RedditPost from './src/screens/RedditPost'
 import Settings from './src/screens/Settings'
 import SourcesList from './src/screens/Sources'
-import { getAppTheme, shapes, spacing } from './src/theme/theme'
+import { getAppTheme, shapes } from './src/theme/theme'
 
 initializeDatabase()
 
@@ -51,8 +51,8 @@ function AppContent({
       const isFocused = routes[index].key === route.key
       switch (route.key) {
         case 'feeds':
-          return <FeedScreen isFocused={isFocused} />
-        case 'sources':
+          return <FeedScreen isFocused={isFocused} setIndex={setIndex} />
+        case 'library':
           return <SourcesList isFocused={isFocused} />
         case 'settings':
           return (

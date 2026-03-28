@@ -13,10 +13,10 @@ export const routes: Route[] = [
     unfocusedIcon: 'compass-outline',
   },
   {
-    key: 'sources',
-    title: 'SOURCES',
-    focusedIcon: 'list-box',
-    unfocusedIcon: 'list-box-outline',
+    key: 'library',
+    title: 'LIBRARY',
+    focusedIcon: 'book-open-page-variant',
+    unfocusedIcon: 'book-open-page-variant-outline',
   },
   {
     key: 'settings',

@@ -50,7 +50,7 @@ export const SUPPORTED_FONTS = {
 
 export const useAppFonts = () => {
   const [selectedFont, setSelectedFont] = useState<fontOptionsType>(
-    (storage.getString(STORAGE_KEYS.APP_FONT) as fontOptionsType) ?? fontOptions.newsreader.value,
+    (storage.getString(STORAGE_KEYS.APP_FONT) as fontOptionsType) ?? fontOptions.poppins.value,
   )
 
   const [fontsLoaded, fontError] = useFonts(SUPPORTED_FONTS)

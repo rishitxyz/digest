@@ -17,9 +17,10 @@ import { fontSize, spacing } from '../theme/theme'
 
 interface FeedScreenProps {
   isFocused: boolean
+  setIndex: React.Dispatch<React.SetStateAction<number>>
 }
 
-export default function FeedScreen({ isFocused }: FeedScreenProps) {
+export default function FeedScreen({ isFocused, setIndex }: FeedScreenProps) {
   const styles = makeStyles(useTheme<MD3Theme>())
   const [filter, setFilter] = useState<FilterValue>('all')
   const { sections, isSyncing, showSnackbar, setShowSnackbar, snackbarText, syncWithNetwork } =
@@ -63,7 +64,7 @@ export default function FeedScreen({ isFocused }: FeedScreenProps) {
         contentContainerStyle={styles.listContent}
         showsVerticalScrollIndicator={false}
         // ── Empty State ──
-        ListEmptyComponent={<EmptyState filter={filter} />}
+        ListEmptyComponent={<EmptyState filter={filter} openLibrary={() => setIndex(1)} />}
       />
       <Snackbar visible={showSnackbar} setVisible={setShowSnackbar} text={snackbarText} />
     </View>
