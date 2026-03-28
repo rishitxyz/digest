@@ -2,9 +2,11 @@ import React from 'react'
 import { StyleSheet, View } from 'react-native'
 
 import { Button, MD3Theme, Text, useTheme } from 'react-native-paper'
-import Svg, { Circle, Path, Rect } from 'react-native-svg'
+import Svg, { Circle, Path } from 'react-native-svg'
 
-import { spacing } from '../../theme/theme'
+import { shapes, spacing } from '../../theme/theme'
+
+import EmptyFeedIllustration from './EmptyStateIllustration'
 
 // ── Custom M3 Illustrations ──────────────────────────────────────────
 
@@ -27,43 +29,6 @@ const BookmarkIllustration = ({ theme }: { theme: MD3Theme }) => {
   )
 }
 
-const AddSourceIllustration = ({ theme }: { theme: MD3Theme }) => {
-  const styles = makeStyles(theme)
-  return (
-    <Svg width="160" height="160" viewBox="0 0 160 160" fill="none" style={styles.illustration}>
-      {/* Soft background blob */}
-      <Circle cx="80" cy="80" r="64" fill={theme.colors.primaryContainer} />
-      {/* Dashed outer accent ring */}
-      <Circle
-        cx="80"
-        cy="80"
-        r="74"
-        stroke={theme.colors.outlineVariant}
-        strokeWidth="2"
-        strokeDasharray="8 8"
-      />
-      {/* Document/Card Outline */}
-      <Rect
-        x="50"
-        y="36"
-        width="60"
-        height="88"
-        rx="12"
-        stroke={theme.colors.primary}
-        strokeWidth="8"
-        fill={theme.colors.surface}
-      />
-      {/* Plus Icon inside the document */}
-      <Path
-        d="M80 60V100M60 80H100"
-        stroke={theme.colors.primary}
-        strokeWidth="8"
-        strokeLinecap="round"
-      />
-    </Svg>
-  )
-}
-
 // ── Main Component ───────────────────────────────────────────────────
 
 export const EmptyState = ({
@@ -82,7 +47,7 @@ export const EmptyState = ({
       {filter === 'bookmarks' ? (
         <BookmarkIllustration theme={theme} />
       ) : (
-        <AddSourceIllustration theme={theme} />
+        <EmptyFeedIllustration theme={theme} />
       )}
 
       {/* 2. Text and Actions */}
@@ -92,9 +57,8 @@ export const EmptyState = ({
         </Text>
       ) : (
         <Button
-          mode="contained"
           icon="book-open-page-variant"
-          style={{ padding: spacing.xs, borderRadius: spacing.lg }}
+          style={{ padding: spacing.xs, borderRadius: shapes.large }}
           onTouchEnd={openLibrary}
           // Ensure your onPress is hooked up here to actually trigger the modal!
         >
@@ -117,7 +81,7 @@ const makeStyles = (theme: MD3Theme) =>
       flex: 1,
       justifyContent: 'center',
       alignItems: 'center',
-      paddingTop: 60,
+      paddingTop: 90,
       paddingHorizontal: spacing.xl,
     },
     illustration: {

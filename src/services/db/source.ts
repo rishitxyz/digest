@@ -62,9 +62,9 @@ export const deleteById = (id: string): undefined => {
 
 export const getSourcesWithLatestArticles = async (
   fetchBookmarksOnly: boolean = false,
-  limit: number = 3,
+  limit: number = 5,
 ): Promise<SourceWithArticles[]> => {
-  return await db.query.SourceTable.findMany({
+  const results = await db.query.SourceTable.findMany({
     with: {
       articles: {
         where: (article, { eq }) => (fetchBookmarksOnly ? eq(article.bookmarked, true) : undefined),
@@ -73,6 +73,11 @@ export const getSourcesWithLatestArticles = async (
       },
     },
   })
+
+  return results.map((result) => ({
+    ...result,
+    articles: result.articles.slice(0, result.qty),
+  }))
 }
 
 export const refreshArticles = async () => {
