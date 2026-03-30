@@ -3,6 +3,8 @@ import { Platform } from 'react-native'
 import type { useMaterial3Theme } from 'react-native-material3-theme'
 import { MD3DarkTheme, MD3LightTheme, MD3Theme, configureFonts } from 'react-native-paper'
 
+import { fontOptionsType } from '../hooks/useAppFonts'
+
 // 1. Import the type
 
 // ── M3 Expressive Spacing Tokens (8dp grid) ──────────────────────────
@@ -110,7 +112,7 @@ export const fontSize = {
   labelSmall: 11,
 }
 
-export const getDynamicFonts = (fontPrefix: 'FiraSans' | 'Poppins' | 'Newsreader') => {
+export const getDynamicFonts = (fontPrefix: fontOptionsType) => {
   const fontConfig = {
     displayLarge: {
       fontFamily: `${fontPrefix}_400Regular`,
@@ -246,7 +248,7 @@ export type SystemM3Theme = ReturnType<typeof useMaterial3Theme>['theme']
 // 2. Add the dynamic theme assembler
 export const getAppTheme = (
   isDarkMode: boolean,
-  selectedFont: 'FiraSans' | 'Poppins' | 'Newsreader',
+  selectedFont: fontOptionsType,
   systemTheme: SystemM3Theme | null,
 ): MD3Theme => {
   const baseTheme = isDarkMode ? DarkTheme : LightTheme

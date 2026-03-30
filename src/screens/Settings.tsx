@@ -15,6 +15,8 @@ interface SettingsProps {
   currentFont: string
   onChangeFont: (font: fontOptionsType) => void
   onGoToFeeds: () => void
+  showImages: boolean
+  onToggleShowImages: () => void
 }
 
 export default function Settings({
@@ -23,6 +25,8 @@ export default function Settings({
   currentFont,
   onChangeFont,
   onGoToFeeds,
+  showImages,
+  onToggleShowImages,
 }: SettingsProps) {
   const [openFontMenu, setOpenFontMenu] = useState<boolean>(false)
   const theme = useTheme<MD3Theme>()
@@ -56,7 +60,7 @@ export default function Settings({
 
           <List.Item
             title={() => <Text variant="bodyLarge">Dark Mode</Text>}
-            description={() => <Text variant="bodyMedium">Use dark theme throughout the app.</Text>}
+            description={() => <Text variant="bodyMedium">use dark theme throughout the app.</Text>}
             left={(props) => (
               <List.Icon {...props} icon="weather-night" color={theme.colors.primary} />
             )}
@@ -81,8 +85,21 @@ export default function Settings({
           </List.Subheader>
 
           <List.Item
+            title={() => <Text variant="bodyLarge">Display post images</Text>}
+            description={() => <Text variant="bodyMedium">display post image on feeds page.</Text>}
+            left={(props) => <List.Icon {...props} icon="image-outline" />}
+            right={() => (
+              <Switch
+                value={showImages}
+                onValueChange={onToggleShowImages}
+                color={theme.colors.primary}
+              />
+            )}
+          />
+
+          <List.Item
             title={() => <Text variant="bodyLarge">Change display font</Text>}
-            description={() => <Text variant="bodyMedium">Font for app display</Text>}
+            description={() => <Text variant="bodyMedium">font for app display</Text>}
             left={(props) => (
               <List.Icon {...props} icon="format-font" color={theme.colors.secondary} />
             )}
@@ -90,9 +107,8 @@ export default function Settings({
               <Menu
                 visible={openFontMenu}
                 onDismiss={() => setOpenFontMenu(false)}
-                anchor={
-                  <Button onPress={() => setOpenFontMenu(true)}>{currentFont.toLowerCase()}</Button>
-                }
+                anchor={<Button onPress={() => setOpenFontMenu(true)}>{currentFont}</Button>}
+                mode="flat"
               >
                 {Object.values(fontOptions).map(({ displayName, value }, index) => (
                   <Menu.Item
@@ -102,7 +118,6 @@ export default function Settings({
                       onChangeFont(value as fontOptionsType)
                       setOpenFontMenu(false)
                     }}
-                    titleStyle={{ textTransform: 'lowercase' }}
                   />
                 ))}
               </Menu>
@@ -113,7 +128,7 @@ export default function Settings({
 
           <List.Item
             title={() => <Text variant="bodyLarge">Export user data</Text>}
-            description={() => <Text variant="bodyMedium">Export local SQLite db file</Text>}
+            description={() => <Text variant="bodyMedium">export local sqlite db file.</Text>}
             left={(props) => <List.Icon {...props} icon="export" color={theme.colors.secondary} />}
             right={() => <List.Icon icon="download-outline" color={theme.colors.primary} />}
             titleStyle={{ color: theme.colors.onSurface }}
@@ -122,7 +137,7 @@ export default function Settings({
           />
           <List.Item
             title={() => <Text variant="bodyLarge">Delete user data</Text>}
-            description={() => <Text variant="bodyMedium">Delete all articles & sources</Text>}
+            description={() => <Text variant="bodyMedium">delete all data and reset app.</Text>}
             left={(props) => (
               <List.Icon {...props} icon="alert-circle-outline" color={theme.colors.secondary} />
             )}

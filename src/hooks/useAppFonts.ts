@@ -8,6 +8,12 @@ import {
   useFonts,
 } from '@expo-google-fonts/fira-sans'
 import {
+  Geist_400Regular,
+  Geist_500Medium,
+  Geist_600SemiBold,
+  Geist_700Bold,
+} from '@expo-google-fonts/geist'
+import {
   Newsreader_400Regular,
   Newsreader_500Medium,
   Newsreader_600SemiBold,
@@ -22,12 +28,13 @@ import {
 
 import { STORAGE_KEYS, storage } from '../database/mmkv'
 
-export type fontOptionsType = 'FiraSans' | 'Poppins' | 'Newsreader'
+export type fontOptionsType = 'FiraSans' | 'Poppins' | 'Newsreader' | 'Geist'
 
 export const fontOptions = {
   firaSans: { displayName: 'Fira Sans', value: 'FiraSans' },
   poppins: { displayName: 'Poppins', value: 'Poppins' },
   newsreader: { displayName: 'Newsreader', value: 'Newsreader' },
+  geist: { displayName: 'Geist', value: 'Geist' },
 }
 
 export const SUPPORTED_FONTS = {
@@ -46,6 +53,11 @@ export const SUPPORTED_FONTS = {
   Newsreader_500Medium,
   Newsreader_600SemiBold,
   Newsreader_700Bold,
+  // Geist
+  Geist_400Regular,
+  Geist_500Medium,
+  Geist_600SemiBold,
+  Geist_700Bold,
 }
 
 export const useAppFonts = () => {

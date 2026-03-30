@@ -13,6 +13,7 @@ import { SafeAreaProvider, SafeAreaView } from 'react-native-safe-area-context'
 import { initializeDatabase } from './src/database/schema'
 import { fontOptionsType, useAppFonts } from './src/hooks/useAppFonts'
 import { useAppTheme } from './src/hooks/useAppTheme'
+import { useFeedImages } from './src/hooks/useFeedImages'
 import { RootStackParamList } from './src/navigation/types'
 import { Route, routes } from './src/routes'
 import AllArticles from './src/screens/AllArticles'
@@ -37,11 +38,15 @@ function AppContent({
   onToggleDarkMode,
   currentFont,
   onChangeFont,
+  showImages,
+  onToggleShowImages,
 }: {
   isDarkMode: boolean
   onToggleDarkMode: () => void
   currentFont: string
   onChangeFont: (font: fontOptionsType) => void
+  showImages: boolean
+  onToggleShowImages: () => void
 }) {
   const theme = useTheme<MD3Theme>()
   const [index, setIndex] = useState(0)
@@ -51,7 +56,7 @@ function AppContent({
       const isFocused = routes[index].key === route.key
       switch (route.key) {
         case 'feeds':
-          return <FeedScreen isFocused={isFocused} setIndex={setIndex} />
+          return <FeedScreen isFocused={isFocused} setIndex={setIndex} showImages={showImages} />
         case 'library':
           return <SourcesList isFocused={isFocused} />
         case 'settings':
@@ -63,13 +68,23 @@ function AppContent({
               currentFont={currentFont}
               onChangeFont={onChangeFont}
               onGoToFeeds={() => setIndex(0)}
+              showImages={showImages}
+              onToggleShowImages={onToggleShowImages}
             />
           )
         default:
           return null
       }
     },
-    [isDarkMode, onToggleDarkMode, currentFont, onChangeFont, index],
+    [
+      isDarkMode,
+      onToggleDarkMode,
+      currentFont,
+      onChangeFont,
+      index,
+      showImages,
+      onToggleShowImages,
+    ],
   )
 
   return (
@@ -103,6 +118,7 @@ function AppContent({
 export default function App() {
   const { isDarkMode, toggleDarkMode, systemM3Theme } = useAppTheme()
   const { selectedFont, fontsLoaded, fontError, changeFont } = useAppFonts()
+  const { showImages, onToggleShowImages } = useFeedImages()
 
   // Hide splash screen when fonts are ready
   const onLayoutRootView = useCallback(async () => {
@@ -134,6 +150,8 @@ export default function App() {
                   onToggleDarkMode={toggleDarkMode}
                   currentFont={selectedFont}
                   onChangeFont={changeFont}
+                  showImages={showImages}
+                  onToggleShowImages={onToggleShowImages}
                 />
               )}
             </Stack.Screen>

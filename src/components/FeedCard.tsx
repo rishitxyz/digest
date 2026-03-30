@@ -17,9 +17,10 @@ import { getRelativeTime } from '../utils/date'
 interface FeedCardProps {
   source: Source
   article: Article
+  showImage: boolean
 }
 
-export default function FeedCard({ source, article }: FeedCardProps) {
+export default function FeedCard({ source, article, showImage }: FeedCardProps) {
   const navigation = useNavigation<NativeStackNavigationProp<RootStackParamList>>()
   const theme = useTheme<MD3Theme>()
 
@@ -53,7 +54,7 @@ export default function FeedCard({ source, article }: FeedCardProps) {
           { borderTopLeftRadius: shapes.large, borderTopRightRadius: shapes.large },
         ]}
       >
-        {article.imageUrl && (
+        {article.imageUrl && showImage && (
           <Image source={{ uri: article.imageUrl }} style={[styles.image]} resizeMode="cover" />
         )}
       </View>
