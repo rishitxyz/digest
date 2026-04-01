@@ -7,11 +7,9 @@ import { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { ActivityIndicator, Appbar, Divider, List, Text, useTheme } from 'react-native-paper'
 
 import { MarkdownText } from '../components/MarkdownText'
-import { MenuAction } from '../components/Menu'
 import { CommentThread } from '../components/RedditPost/CommentThread'
 import { WebViewPage } from '../components/WebViewPage'
 import { Article } from '../database/schema/article'
-import { useViews } from '../hooks/useViews'
 import { RootStackParamList } from '../navigation/types'
 import { REDDIT_BASE_URL, fetchComments } from '../parser/reddit-json'
 import * as articleService from '../services/db/article'
@@ -21,15 +19,14 @@ import { getRelativeTime } from '../utils/date'
 
 type Props = NativeStackScreenProps<RootStackParamList, 'RedditPost'>
 
+type ViewType = 'embedLink' | 'reader'
+
 export default function RedditPost({ route, navigation }: Props) {
   const { id, source } = route.params
   const [post, setPost] = useState<Article>(articleService.readById(id))
   const [comments, setComments] = useState<Comment[]>([])
   const [commentsLoading, setCommentsLoading] = useState<boolean>(Boolean(post.link))
-  const { openMenu, setOpenMenu, viewMode, viewModeOptions } = useViews({
-    defaultView: !post.hasEmbeddedHtml ? 'link' : 'reader',
-    browserLink: `${REDDIT_BASE_URL}${post.link!}`,
-  })
+  const [view, setView] = useState<ViewType>('reader')
   const theme = useTheme()
 
   useEffect(() => {
@@ -65,19 +62,23 @@ export default function RedditPost({ route, navigation }: Props) {
     })
   }
 
-  const handleOpenArticle = async (link: string) => {
-    if (!post.link) return
+  const handleViewHtmlContent = () => {
+    setView(view === 'embedLink' ? 'reader' : 'embedLink')
+  }
 
-    try {
-      await WebBrowser.openBrowserAsync(link, {
-        toolbarColor: theme.colors.surface,
-        controlsColor: theme.colors.primary,
+  const handleOpenInBrowser = async function () {
+    if (post.link) {
+      try {
+        await WebBrowser.openBrowserAsync(`${REDDIT_BASE_URL}${post.link}`, {
+          toolbarColor: theme.colors.surface,
+          controlsColor: theme.colors.primary,
 
-        // Optional iOS presentation style (MODAL makes it slide up nicely)
-        presentationStyle: WebBrowser.WebBrowserPresentationStyle.PAGE_SHEET,
-      })
-    } catch (error) {
-      console.error("Couldn't open browser:", error)
+          // Optional iOS presentation style (MODAL makes it slide up nicely)
+          presentationStyle: WebBrowser.WebBrowserPresentationStyle.PAGE_SHEET,
+        })
+      } catch (error) {
+        console.error("Couldn't open browser:", error)
+      }
     }
   }
 
@@ -90,20 +91,15 @@ export default function RedditPost({ route, navigation }: Props) {
           icon={post.bookmarked ? 'bookmark-check' : 'bookmark-plus-outline'}
           onPress={handleBookmark}
         />
-        <MenuAction
-          visible={openMenu}
-          setVisible={setOpenMenu}
-          anchor={<Appbar.Action icon="dots-vertical" onTouchEnd={() => setOpenMenu(!openMenu)} />}
-          menuOptions={viewModeOptions}
-        />
+        {post.hasEmbeddedHtml && (
+          <Appbar.Action
+            icon={view === 'reader' ? 'web' : 'book'}
+            onPress={handleViewHtmlContent}
+          />
+        )}
+        <Appbar.Action icon="open-in-app" onPress={handleOpenInBrowser} />
       </Appbar.Header>
-
-      {['link', 'original'].includes(viewMode) ? (
-        <WebViewPage
-          link={viewMode === 'link' ? post.description : post.link!}
-          style={{ flex: 1 }}
-        />
-      ) : (
+      {view === 'reader' ? (
         <ScrollView contentContainerStyle={styles.content}>
           <View style={styles.author}>
             <Text variant="labelSmall" style={{ color: theme.colors.primary }}>
@@ -171,6 +167,8 @@ export default function RedditPost({ route, navigation }: Props) {
             </List.Section>
           </View>
         </ScrollView>
+      ) : (
+        <WebViewPage link={post.description} style={{ flex: 1 }} />
       )}
     </View>
   )

@@ -1,14 +1,13 @@
-import React, { useCallback, useState } from 'react'
+import React, { useState } from 'react'
 import { ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native'
+
+import * as WebBrowser from 'expo-web-browser'
 
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { Appbar, Text, useTheme } from 'react-native-paper'
 
 import { HtmlRenderer } from '../components/HtmlRenderer'
-import { MenuAction } from '../components/Menu'
-import { WebViewPage } from '../components/WebViewPage'
 import { Article } from '../database/schema/article'
-import { useViews } from '../hooks/useViews'
 import { RootStackParamList } from '../navigation/types'
 import { toggleBookmarked } from '../services/db/article'
 import * as articleService from '../services/db/article'
@@ -21,10 +20,6 @@ export default function ArticleScreen({ route, navigation }: Props) {
   const { id, source } = route.params
   const [article, setArticle] = useState<Article>(articleService.readById(id))
   const [loading, setLoading] = useState<boolean>(false)
-  const { openMenu, setOpenMenu, viewMode, viewModeOptions } = useViews({
-    defaultView: article.hasEmbeddedHtml ? 'link' : 'reader',
-    browserLink: article.link!,
-  })
   const theme = useTheme()
   const { width } = useWindowDimensions()
 
@@ -36,30 +31,21 @@ export default function ArticleScreen({ route, navigation }: Props) {
     setLoading(false)
   }
 
-  const RenderArticleContent = useCallback(() => {
-    switch (viewMode) {
-      case 'link':
-        return (
-          <WebViewPage
-            link={article.description !== '' ? article.description : article.link!}
-            style={{ flex: 1 }}
-          />
-        )
-      case 'reader':
-        return (
-          <HtmlRenderer
-            html={article.description !== '' ? article.description : (article.summary ?? '')}
-            currentWidth={width}
-          />
-        )
+  const handleOpenInBrowser = async function () {
+    if (article.link) {
+      try {
+        await WebBrowser.openBrowserAsync(article.link, {
+          toolbarColor: theme.colors.surface,
+          controlsColor: theme.colors.primary,
 
-      case 'original':
-        if (article.link) return <WebViewPage link={article.link} style={{ flex: 1 }} />
-
-      default:
-        return <View></View>
+          // Optional iOS presentation style (MODAL makes it slide up nicely)
+          presentationStyle: WebBrowser.WebBrowserPresentationStyle.PAGE_SHEET,
+        })
+      } catch (error) {
+        console.error("Couldn't open browser:", error)
+      }
     }
-  }, [viewMode, article.description, article.summary, article.link, width])
+  }
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
@@ -73,12 +59,7 @@ export default function ArticleScreen({ route, navigation }: Props) {
           onPress={handleBookmarkArticle}
           loading={loading}
         />
-        <MenuAction
-          visible={openMenu}
-          setVisible={setOpenMenu}
-          anchor={<Appbar.Action icon="dots-vertical" onTouchEnd={() => setOpenMenu(!openMenu)} />}
-          menuOptions={viewModeOptions}
-        />
+        <Appbar.Action icon="open-in-app" onPress={handleOpenInBrowser} />
       </Appbar.Header>
 
       <ScrollView contentContainerStyle={styles.content}>
@@ -96,7 +77,12 @@ export default function ArticleScreen({ route, navigation }: Props) {
           {article.title}
         </Text>
 
-        <View>{RenderArticleContent()}</View>
+        <View>
+          <HtmlRenderer
+            html={article.description !== '' ? article.description : (article.summary ?? '')}
+            currentWidth={width}
+          />
+        </View>
       </ScrollView>
     </View>
   )
