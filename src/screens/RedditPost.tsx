@@ -11,6 +11,7 @@ import { MenuAction } from '../components/Menu'
 import { CommentThread } from '../components/RedditPost/CommentThread'
 import { WebViewPage } from '../components/WebViewPage'
 import { Article } from '../database/schema/article'
+import { useViews } from '../hooks/useViews'
 import { RootStackParamList } from '../navigation/types'
 import { REDDIT_BASE_URL, fetchComments } from '../parser/reddit-json'
 import * as articleService from '../services/db/article'
@@ -25,37 +26,11 @@ export default function RedditPost({ route, navigation }: Props) {
   const [post, setPost] = useState<Article>(articleService.readById(id))
   const [comments, setComments] = useState<Comment[]>([])
   const [commentsLoading, setCommentsLoading] = useState<boolean>(Boolean(post.link))
-  const [openMenu, setOpenMenu] = useState<boolean>(false)
+  const { openMenu, setOpenMenu, viewMode, viewModeOptions } = useViews({
+    defaultView: !post.hasEmbeddedHtml ? 'link' : 'reader',
+    browserLink: `${REDDIT_BASE_URL}${post.link!}`,
+  })
   const theme = useTheme()
-
-  type ViewMode = 'reader' | 'link' | 'original'
-  const [viewMode, setViewMode] = useState<ViewMode>(post.hasEmbeddedHtml ? 'link' : 'reader')
-
-  const viewModeOptions: {
-    key: ViewMode
-    title: string
-    onPress: () => void
-    disabled: boolean
-  }[] = [
-    {
-      key: 'reader',
-      title: 'Reader',
-      onPress: () => setViewMode('reader'),
-      disabled: viewMode === 'reader',
-    },
-    {
-      key: 'original',
-      title: 'Open in browser',
-      onPress: () => handleOpenArticle(`${REDDIT_BASE_URL}${post.link!}`),
-      disabled: viewMode === 'original',
-    },
-    {
-      key: 'link',
-      title: 'WebView',
-      onPress: () => setViewMode('link'),
-      disabled: viewMode === 'link',
-    },
-  ]
 
   useEffect(() => {
     let ignore = false

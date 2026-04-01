@@ -1,11 +1,14 @@
-import React, { useState } from 'react'
+import React, { useCallback, useState } from 'react'
 import { ScrollView, StyleSheet, View, useWindowDimensions } from 'react-native'
 
 import type { NativeStackScreenProps } from '@react-navigation/native-stack'
 import { Appbar, Text, useTheme } from 'react-native-paper'
 
 import { HtmlRenderer } from '../components/HtmlRenderer'
+import { MenuAction } from '../components/Menu'
+import { WebViewPage } from '../components/WebViewPage'
 import { Article } from '../database/schema/article'
+import { useViews } from '../hooks/useViews'
 import { RootStackParamList } from '../navigation/types'
 import { toggleBookmarked } from '../services/db/article'
 import * as articleService from '../services/db/article'
@@ -18,6 +21,10 @@ export default function ArticleScreen({ route, navigation }: Props) {
   const { id, source } = route.params
   const [article, setArticle] = useState<Article>(articleService.readById(id))
   const [loading, setLoading] = useState<boolean>(false)
+  const { openMenu, setOpenMenu, viewMode, viewModeOptions } = useViews({
+    defaultView: article.hasEmbeddedHtml ? 'link' : 'reader',
+    browserLink: article.link!,
+  })
   const theme = useTheme()
   const { width } = useWindowDimensions()
 
@@ -28,6 +35,31 @@ export default function ArticleScreen({ route, navigation }: Props) {
     setArticle(updatedArticle)
     setLoading(false)
   }
+
+  const RenderArticleContent = useCallback(() => {
+    switch (viewMode) {
+      case 'link':
+        return (
+          <WebViewPage
+            link={article.description !== '' ? article.description : article.link!}
+            style={{ flex: 1 }}
+          />
+        )
+      case 'reader':
+        return (
+          <HtmlRenderer
+            html={article.description !== '' ? article.description : (article.summary ?? '')}
+            currentWidth={width}
+          />
+        )
+
+      case 'original':
+        if (article.link) return <WebViewPage link={article.link} style={{ flex: 1 }} />
+
+      default:
+        return <View></View>
+    }
+  }, [viewMode, article.description, article.summary, article.link, width])
 
   return (
     <View style={[styles.container, { backgroundColor: theme.colors.background }]}>
@@ -40,6 +72,12 @@ export default function ArticleScreen({ route, navigation }: Props) {
           icon={article.bookmarked ? 'bookmark-check' : 'bookmark-plus-outline'}
           onPress={handleBookmarkArticle}
           loading={loading}
+        />
+        <MenuAction
+          visible={openMenu}
+          setVisible={setOpenMenu}
+          anchor={<Appbar.Action icon="dots-vertical" onTouchEnd={() => setOpenMenu(!openMenu)} />}
+          menuOptions={viewModeOptions}
         />
       </Appbar.Header>
 
@@ -58,9 +96,7 @@ export default function ArticleScreen({ route, navigation }: Props) {
           {article.title}
         </Text>
 
-        <View>
-          <HtmlRenderer html={article.description} currentWidth={width} />
-        </View>
+        <View>{RenderArticleContent()}</View>
       </ScrollView>
     </View>
   )
